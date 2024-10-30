@@ -62,18 +62,15 @@ vim.keymap.set("n", "<backspace>", [[^]])
 vim.keymap.set("n", "q", "<nop>")
 
 --@autocmds
-local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup("user_cmds", { clear = true })
-
-autocmd("TextYankPost", {
+vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "highlight on yank",
     group = augroup,
     callback = function()
         vim.highlight.on_yank { higroup = "Visual", timeout = 300 }
     end,
 })
-
-autocmd("FileType", {
+vim.api.nvim_create_autocmd("FileType", {
     desc = "close window with <q>",
     group = augroup,
     pattern = {
@@ -88,13 +85,10 @@ autocmd("FileType", {
         vim.keymap.set("n", "q", [[<cmd>close<cr>]], { buffer = args.buf })
     end,
 })
-
-autocmd("WinResized", {
+vim.api.nvim_create_autocmd("WinResized", {
     desc = "rebalance window sizes",
     group = augroup,
-    callback = function()
-        vim.cmd.wincmd [[=]]
-    end,
+    callback = function() vim.cmd.wincmd [[=]] end,
 })
 
 --@deps
