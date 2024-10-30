@@ -43,9 +43,8 @@ vim.opt.completeopt = {
     "menuone", -- only show popup when theres more than one item
     "popup", -- show extra info in popup
     "noselect", -- do not auto select a match
-    -- "fuzzy" -- enable fuzzy-matching
+    "fuzzy", -- enable fuzzy-matching
 }
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 --@keymaps
 vim.keymap.set({ "n", "x" }, ";", ":", { desc = "command mode" })
@@ -111,45 +110,36 @@ end
 require("mini.deps").setup { path = { package = path_package } }
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
---@plugins
 now(function()
-    -- ui
+    add "zenbones-theme/zenbones.nvim"
+    vim.g.zenbones_compat = 1
+    vim.cmd.colo [[zenbones]]
+
     add "sheerun/vim-polyglot"
     add "stevearc/dressing.nvim"
+    add "j-hui/fidget.nvim"
+
     add "cormacrelf/dark-notify"
+    require("dark_notify").run {}
+
     add "strash/everybody-wants-that-line.nvim"
     require("everybody-wants-that-line").setup { filename = { enabled = false } }
-    add "j-hui/fidget.nvim"
-    add "bekaboo/dropbar.nvim"
-    vim.keymap.set("n", "<leader>-", function()
-        require("dropbar.api").pick()
-    end, { silent = true, desc = "pick symbol" })
-    add "zenbones-theme/zenbones.nvim"
-    vim.g.zenwritten_compat = 1
-    vim.cmd.colo [[zenwritten]]
 
-    -- mini
-    require("mini.ai").setup {}
-    require("mini.align").setup {}
-    require("mini.bracketed").setup {}
-    require("mini.diff").setup {}
-    require("mini.extra").setup {}
-    require("mini.files").setup {}
-    require("mini.icons").setup {}
-    require("mini.pairs").setup {}
-    require("mini.pick").setup {
-        window = {
-            config = {
-                height = math.floor(vim.o.lines * 0.2),
-                border = "none",
-            },
+    add "bekaboo/dropbar.nvim"
+    vim.keymap.set(
+        "n",
+        "<leader>-",
+        function() require("dropbar.api").pick() end,
+        { silent = true, desc = "pick symbol" }
+    )
+end)
+
+later(function()
+    require("mini.files").setup {
+        mappings = {
+            go_in_plus = "l",
         },
     }
-    require("mini.surround").setup {}
-
-    vim.keymap.set("n", "<leader><space>", function()
-        require("mini.pick").builtin.files()
-    end, { silent = true, desc = "open file picker" })
 
     vim.keymap.set("n", "-", function()
         local MiniFiles = require "mini.files"
@@ -159,15 +149,93 @@ now(function()
         end
     end, { silent = true, desc = "toggle mini.files" })
 
-    -- lsp
+    vim.api.nvim_create_autocmd("User", {
+        desc = "Add minifiles split keymaps",
+        pattern = "MiniFilesBufferCreate",
+        callback = function(args)
+            local buf_id = args.data.buf_id
+            local MiniFiles = require "mini.files"
+            local map_split = function(buf, lhs, direction)
+                local rhs = function()
+                    -- Make new window and set it as target
+                    local new_target_window
+                    vim.api.nvim_win_call(
+                        MiniFiles.get_target_window(),
+                        function()
+                            vim.cmd(direction .. " split")
+                            new_target_window = vim.api.nvim_get_current_win()
+                        end
+                    )
+                    MiniFiles.set_target_window(new_target_window)
+                    MiniFiles.go_in()
+                    MiniFiles.close()
+                end
+                local desc = "Split " .. direction
+                vim.keymap.set("n", lhs, rhs, { buffer = buf, desc = desc })
+            end
+
+            map_split(buf_id, "s", "belowright horizontal")
+            map_split(buf_id, "v", "belowright vertical")
+        end,
+    })
+end)
+
+later(function()
+    require("mini.pairs").setup {}
+    require("mini.ai").setup {}
+    require("mini.align").setup {}
+    require("mini.bracketed").setup {}
+    require("mini.diff").setup {}
+    require("mini.extra").setup {}
+    require("mini.surround").setup {}
+    require("mini.icons").setup {}
+
+    require("mini.pick").setup {
+        window = {
+            config = {
+                height = math.floor(vim.o.lines * 0.2),
+                border = "none",
+            },
+        },
+    }
+    vim.ui.select = require("mini.pick").ui_select
+    vim.keymap.set(
+        "n",
+        "<leader>fb",
+        function() require("mini.pick").builtin.buffers() end,
+        { silent = true, desc = "open buffer picker" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>fg",
+        function() require("mini.pick").builtin.grep_live() end,
+        { silent = true, desc = "open live grep" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader><space>",
+        function() require("mini.pick").builtin.files() end,
+        { silent = true, desc = "open file picker" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>z",
+        function() require("mini.pick").builtin.resume() end,
+        { silent = true, desc = "resume last picker" }
+    )
+end)
+
+later(function()
     add {
         source = "neovim/nvim-lspconfig",
-        depends = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
+        depends = {
+            "williamboman/mason.nvim",
+            "williamboman/mason-lspconfig.nvim",
+            "yioneko/nvim-vtsls",
+        },
     }
     local lsp = require "lspconfig"
-    local default_handler = function(server)
-        lsp[server].setup {}
-    end
+    local default_handler = function(server) lsp[server].setup {} end
     require("mason").setup()
     require("mason-lspconfig").setup {
         ensure_installed = {
@@ -184,14 +252,16 @@ now(function()
             local on_attach = function(client, _)
                 -- disable lsp formatting in favor of conform
                 client.server_capabilities.docuementFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider = false
+                client.server_capabilities.documentRangeFormattingProvider =
+                    false
             end
             local client = vim.lsp.get_client_by_id(event.data.client_id)
             on_attach(client, event.buf)
         end,
     })
+end)
 
-    -- treesitter
+later(function()
     add {
         source = "nvim-treesitter/nvim-treesitter",
         depends = {
@@ -200,9 +270,7 @@ now(function()
             "windwp/nvim-ts-autotag",
         },
         hooks = {
-            post_checkout = function()
-                vim.cmd [[TSUpdate]]
-            end,
+            post_checkout = function() vim.cmd [[TSUpdate]] end,
         },
     }
     require("nvim-treesitter.configs").setup {
@@ -222,8 +290,9 @@ now(function()
             },
         },
     }
+end)
 
-    -- conform
+later(function()
     add "stevearc/conform.nvim"
     require("conform").setup {
         formatters_by_ft = {
@@ -238,26 +307,35 @@ now(function()
             typescriptreact = { "prettierd" },
             go = { "gofmt" },
         },
-        format_on_save = {
-            -- These options will be passed to conform.format()
-            timeout_ms = 800,
-            lsp_format = "fallback",
-        },
+        -- format_on_save = {
+        --     timeout_ms = 800,
+        --     lsp_format = "fallback",
+        -- },
     }
     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     vim.api.nvim_create_user_command("Format", function(args)
         local range = nil
         if args.count ~= -1 then
-            local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+            local end_line = vim.api.nvim_buf_get_lines(
+                0,
+                args.line2 - 1,
+                args.line2,
+                true
+            )[1]
             range = {
                 start = { args.line1, 0 },
                 ["end"] = { args.line2, end_line:len() },
             }
         end
-        require("conform").format { async = true, lsp_fallback = true, range = range }
+        require("conform").format {
+            async = true,
+            lsp_fallback = true,
+            range = range,
+        }
     end, { range = true })
+end)
 
-    -- completion
+later(function()
     add {
         source = "saghen/blink.cmp",
         depends = { "rafamadriz/friendly-snippets" },
@@ -265,9 +343,6 @@ now(function()
     }
     require("blink.cmp").setup {
         highlight = {
-            -- sets the fallback highlight groups to nvim-cmp's highlight groups
-            -- useful for when your theme doesn't support blink.cmp
-            -- will be removed in a future release, assuming themes add support
             use_nvim_cmp_as_default = true,
         },
     }
@@ -285,7 +360,6 @@ now(function()
 end)
 
 later(function()
-    -- git
     add {
         source = "neogitorg/neogit",
         depends = { "sindrets/diffview.nvim", "nvim-lua/plenary.nvim" },
@@ -304,14 +378,21 @@ later(function()
             item = { "▸", "▾" },
         },
     }
-    vim.keymap.set("n", "<leader>gg", function()
-        require("neogit").open()
-    end, { silent = true, desc = "git status" })
-    vim.keymap.set("n", "<leader>gh", function()
-        vim.cmd.DiffviewFileHistory "%"
-    end, { silent = true, desc = "git status" })
+    vim.keymap.set(
+        "n",
+        "<leader>gg",
+        function() require("neogit").open() end,
+        { silent = true, desc = "git status" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>gh",
+        function() vim.cmd.DiffviewFileHistory "%" end,
+        { silent = true, desc = "git status" }
+    )
+end)
 
-    -- quickfix
+later(function()
     add {
         source = "stevearc/quicker.nvim",
         depends = {
@@ -324,35 +405,69 @@ later(function()
             lsp = false,
             load_buffers = false,
         },
+        keys = {
+            {
+                ">",
+                function()
+                    require("quicker").expand {
+                        before = 2,
+                        after = 2,
+                        add_to_existing = true,
+                    }
+                end,
+                desc = "expand qf context",
+            },
+            {
+                "<",
+                function() require("quicker").collapse() end,
+                desc = "collapse qf context",
+            },
+        },
     }
-    vim.keymap.set("n", "<leader>q", function()
-        require("quicker").toggle()
-    end, { silent = true, desc = "toggle quickfix" })
-    vim.keymap.set("n", "<leader>l", function()
-        require("quicker").toggle { loclist = true }
-    end, { silent = true, desc = "toggle loclist" })
-    vim.keymap.set("n", ">", function()
-        require("quicker").expand { before = 2, after = 2, add_to_existing = true }
-    end, { silent = true, desc = "expand quickfix" })
-    vim.keymap.set("n", "<", function()
-        require("quicker").collapse()
-    end, { silent = true, desc = "collapse quickfix" })
+    vim.keymap.set(
+        "n",
+        "<leader>q",
+        function() require("quicker").toggle() end,
+        { silent = true, desc = "toggle quickfix" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>l",
+        function() require("quicker").toggle { loclist = true } end,
+        { silent = true, desc = "toggle loclist" }
+    )
+end)
 
-    -- windows
+later(function()
     add "ten3roberts/window-picker.nvim"
-    vim.keymap.set("n", "<leader>ww", function()
-        vim.cmd [[WindowPick]]
-    end, { silent = true, desc = "pick window" })
-    vim.keymap.set("n", "<leader>wq", function()
-        vim.cmd [[WindowZap]]
-    end, { silent = true, desc = "close window" })
-    vim.keymap.set("n", "<leader>wo", function()
-        vim.cmd [[wincmd o]]
-    end, { silent = true, desc = "close all other windows" })
-    vim.keymap.set("n", "<leader>wv", function()
-        vim.cmd [[wincmd v]]
-    end, { silent = true, desc = "spit window vertically" })
-    vim.keymap.set("n", "<leader>ws", function()
-        vim.cmd [[wincmd s]]
-    end, { silent = true, desc = "spit window horizontally" })
+    vim.keymap.set(
+        "n",
+        "<leader>ww",
+        function() vim.cmd [[WindowPick]] end,
+        { silent = true, desc = "pick window" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>wq",
+        function() vim.cmd [[WindowZap]] end,
+        { silent = true, desc = "close window" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>wo",
+        function() vim.cmd [[wincmd o]] end,
+        { silent = true, desc = "close all other windows" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>wv",
+        function() vim.cmd [[wincmd v]] end,
+        { silent = true, desc = "spit window vertically" }
+    )
+    vim.keymap.set(
+        "n",
+        "<leader>ws",
+        function() vim.cmd [[wincmd s]] end,
+        { silent = true, desc = "spit window horizontally" }
+    )
 end)
