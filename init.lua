@@ -17,12 +17,8 @@ vim.opt.ignorecase = true
 vim.opt.infercase = true
 vim.opt.laststatus = 3
 vim.opt.list = true
-vim.opt.listchars = {
-    tab = "⁚⁚",
-    trail = "·",
-    extends = "→",
-    precedes = "←",
-}
+vim.opt.listchars =
+    { tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
 vim.opt.number = true
 vim.opt.ruler = false
 vim.opt.scrolloff = 999
@@ -87,7 +83,9 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("WinResized", {
     desc = "rebalance window sizes",
     group = augroup,
-    callback = function() vim.cmd.wincmd [[=]] end,
+    callback = function()
+        vim.cmd.wincmd [[=]]
+    end,
 })
 
 --@deps
@@ -126,12 +124,9 @@ now(function()
     require("everybody-wants-that-line").setup { filename = { enabled = false } }
 
     add "bekaboo/dropbar.nvim"
-    vim.keymap.set(
-        "n",
-        "<leader>-",
-        function() require("dropbar.api").pick() end,
-        { silent = true, desc = "pick symbol" }
-    )
+    vim.keymap.set("n", "<leader>-", function()
+        require("dropbar.api").pick()
+    end, { silent = true, desc = "pick symbol" })
 end)
 
 later(function()
@@ -199,30 +194,18 @@ later(function()
         },
     }
     vim.ui.select = require("mini.pick").ui_select
-    vim.keymap.set(
-        "n",
-        "<leader>fb",
-        function() require("mini.pick").builtin.buffers() end,
-        { silent = true, desc = "open buffer picker" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>fg",
-        function() require("mini.pick").builtin.grep_live() end,
-        { silent = true, desc = "open live grep" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader><space>",
-        function() require("mini.pick").builtin.files() end,
-        { silent = true, desc = "open file picker" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>z",
-        function() require("mini.pick").builtin.resume() end,
-        { silent = true, desc = "resume last picker" }
-    )
+    vim.keymap.set("n", "<leader>fb", function()
+        require("mini.pick").builtin.buffers()
+    end, { silent = true, desc = "open buffer picker" })
+    vim.keymap.set("n", "<leader>fg", function()
+        require("mini.pick").builtin.grep_live()
+    end, { silent = true, desc = "open live grep" })
+    vim.keymap.set("n", "<leader><space>", function()
+        require("mini.pick").builtin.files()
+    end, { silent = true, desc = "open file picker" })
+    vim.keymap.set("n", "<leader>z", function()
+        require("mini.pick").builtin.resume()
+    end, { silent = true, desc = "resume last picker" })
 end)
 
 later(function()
@@ -235,7 +218,9 @@ later(function()
         },
     }
     local lsp = require "lspconfig"
-    local default_handler = function(server) lsp[server].setup {} end
+    local default_handler = function(server)
+        lsp[server].setup {}
+    end
     require("mason").setup()
     require("mason-lspconfig").setup {
         ensure_installed = {
@@ -270,7 +255,9 @@ later(function()
             "windwp/nvim-ts-autotag",
         },
         hooks = {
-            post_checkout = function() vim.cmd [[TSUpdate]] end,
+            post_checkout = function()
+                vim.cmd [[TSUpdate]]
+            end,
         },
     }
     require("nvim-treesitter.configs").setup {
@@ -378,18 +365,12 @@ later(function()
             item = { "▸", "▾" },
         },
     }
-    vim.keymap.set(
-        "n",
-        "<leader>gg",
-        function() require("neogit").open() end,
-        { silent = true, desc = "git status" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>gh",
-        function() vim.cmd.DiffviewFileHistory "%" end,
-        { silent = true, desc = "git status" }
-    )
+    vim.keymap.set("n", "<leader>gg", function()
+        require("neogit").open()
+    end, { silent = true, desc = "git status" })
+    vim.keymap.set("n", "<leader>gh", function()
+        vim.cmd.DiffviewFileHistory "%"
+    end, { silent = true, desc = "git status" })
 end)
 
 later(function()
@@ -419,55 +400,36 @@ later(function()
             },
             {
                 "<",
-                function() require("quicker").collapse() end,
+                function()
+                    require("quicker").collapse()
+                end,
                 desc = "collapse qf context",
             },
         },
     }
-    vim.keymap.set(
-        "n",
-        "<leader>q",
-        function() require("quicker").toggle() end,
-        { silent = true, desc = "toggle quickfix" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>l",
-        function() require("quicker").toggle { loclist = true } end,
-        { silent = true, desc = "toggle loclist" }
-    )
+    vim.keymap.set("n", "<leader>q", function()
+        require("quicker").toggle()
+    end, { silent = true, desc = "toggle quickfix" })
+    vim.keymap.set("n", "<leader>l", function()
+        require("quicker").toggle { loclist = true }
+    end, { silent = true, desc = "toggle loclist" })
 end)
 
 later(function()
     add "ten3roberts/window-picker.nvim"
-    vim.keymap.set(
-        "n",
-        "<leader>ww",
-        function() vim.cmd [[WindowPick]] end,
-        { silent = true, desc = "pick window" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>wq",
-        function() vim.cmd [[WindowZap]] end,
-        { silent = true, desc = "close window" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>wo",
-        function() vim.cmd [[wincmd o]] end,
-        { silent = true, desc = "close all other windows" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>wv",
-        function() vim.cmd [[wincmd v]] end,
-        { silent = true, desc = "spit window vertically" }
-    )
-    vim.keymap.set(
-        "n",
-        "<leader>ws",
-        function() vim.cmd [[wincmd s]] end,
-        { silent = true, desc = "spit window horizontally" }
-    )
+    vim.keymap.set("n", "<leader>ww", function()
+        vim.cmd [[WindowPick]]
+    end, { silent = true, desc = "pick window" })
+    vim.keymap.set("n", "<leader>wq", function()
+        vim.cmd [[WindowZap]]
+    end, { silent = true, desc = "close window" })
+    vim.keymap.set("n", "<leader>wo", function()
+        vim.cmd [[wincmd o]]
+    end, { silent = true, desc = "close all other windows" })
+    vim.keymap.set("n", "<leader>wv", function()
+        vim.cmd [[wincmd v]]
+    end, { silent = true, desc = "spit window vertically" })
+    vim.keymap.set("n", "<leader>ws", function()
+        vim.cmd [[wincmd s]]
+    end, { silent = true, desc = "spit window horizontally" })
 end)
