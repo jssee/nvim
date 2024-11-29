@@ -155,7 +155,7 @@ later(function()
                     -- Make new window and set it as target
                     local new_target_window
                     vim.api.nvim_win_call(
-                        MiniFiles.get_target_window(),
+                        MiniFiles.get_explorer_state().target_window,
                         function()
                             vim.cmd(direction .. " split")
                             new_target_window = vim.api.nvim_get_current_win()
@@ -364,6 +364,9 @@ later(function()
             section = { "▸", "▾" },
             item = { "▸", "▾" },
         },
+    }
+    require("diffview").setup {
+        use_icons = false,
     }
     vim.keymap.set("n", "<leader>gg", function()
         require("neogit").open()
