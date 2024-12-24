@@ -222,11 +222,15 @@ later(function()
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
             "yioneko/nvim-vtsls",
+            "saghen/blink.nvim",
         },
     }
     local lsp = require "lspconfig"
     local default_handler = function(server)
-        lsp[server].setup {}
+        local capabilities = require("blink.cmp").get_lsp_capabilities()
+        lsp[server].setup {
+            capabilities = capabilities,
+        }
     end
     require("mason").setup()
     require("mason-lspconfig").setup {
@@ -328,17 +332,43 @@ later(function()
     end, { range = true })
 end)
 
-later(function()
+now(function()
     add {
         source = "saghen/blink.cmp",
         depends = { "rafamadriz/friendly-snippets" },
-        checkout = "v0.3.1",
+        checkout = "v0.8.1",
     }
     require("blink.cmp").setup {
-        highlight = {
-            use_nvim_cmp_as_default = true,
+        keymap = {
+            preset = "super-tab",
+        },
+        signature = {
+            enabled = true,
+        },
+        completion = {
+            menu = {
+                draw = {
+                    components = {
+                        kind_icon = {
+                            ellipsis = false,
+                            text = function(ctx)
+                                local kind_icon, _, _ =
+                                    require("mini.icons").get("lsp", ctx.kind)
+                                return kind_icon
+                            end,
+                            -- Optionally, you may also use the highlights from mini.icons
+                            highlight = function(ctx)
+                                local _, hl, _ =
+                                    require("mini.icons").get("lsp", ctx.kind)
+                                return hl
+                            end,
+                        },
+                    },
+                },
+            },
         },
     }
+
     add "supermaven-inc/supermaven-nvim"
     require("supermaven-nvim").setup {
         color = {
