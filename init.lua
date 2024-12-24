@@ -114,8 +114,6 @@ now(function()
     vim.cmd.colo [[zenwritten]]
 
     add "sheerun/vim-polyglot"
-    add "stevearc/dressing.nvim"
-    add "j-hui/fidget.nvim"
 
     add "cormacrelf/dark-notify"
     require("dark_notify").run {}
@@ -184,6 +182,15 @@ later(function()
     require("mini.extra").setup {}
     require("mini.surround").setup {}
     require("mini.icons").setup {}
+    require("mini.notify").setup {
+        window = {
+            config = {
+                border = "none",
+            },
+        },
+    }
+    local notify_opts = { ERROR = { duration = 10000 } }
+    vim.notify = require("mini.notify").make_notify(notify_opts)
 
     require("mini.pick").setup {
         window = {
