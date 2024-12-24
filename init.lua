@@ -257,7 +257,6 @@ later(function()
     add {
         source = "nvim-treesitter/nvim-treesitter",
         depends = {
-            -- "rrethy/nvim-treesitter-endwise",
             "joosepalviste/nvim-ts-context-commentstring",
             "windwp/nvim-ts-autotag",
         },
@@ -271,7 +270,6 @@ later(function()
         auto_install = true,
         highlight = { enable = true },
         indent = { enable = true },
-        endwise = { enable = true },
         autotag = {
             enable = true,
         },
@@ -284,6 +282,7 @@ later(function()
             },
         },
     }
+    require("nvim-ts-autotag").setup {}
 end)
 
 later(function()
