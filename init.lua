@@ -110,8 +110,8 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
 now(function()
     add "zenbones-theme/zenbones.nvim"
-    vim.g.zenbones_compat = 1
-    vim.cmd.colo [[zenbones]]
+    vim.g.zenwritten_compat = 1
+    vim.cmd.colo [[zenwritten]]
 
     add "sheerun/vim-polyglot"
     add "stevearc/dressing.nvim"
