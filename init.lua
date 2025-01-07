@@ -111,7 +111,13 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 now(function()
     add "zenbones-theme/zenbones.nvim"
     vim.g.zenwritten_compat = 1
-    vim.cmd.colo [[zenwritten]]
+    -- vim.cmd.colo [[zenwritten]]
+
+    add "folke/tokyonight.nvim"
+    require("tokyonight").setup {
+        transparent = true,
+    }
+    vim.cmd.colo [[tokyonight]]
 
     add "sheerun/vim-polyglot"
 
