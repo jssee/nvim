@@ -310,10 +310,10 @@ later(function()
             typescriptreact = { "prettierd" },
             go = { "gofmt" },
         },
-        -- format_on_save = {
-        --     timeout_ms = 800,
-        --     lsp_format = "fallback",
-        -- },
+        format_on_save = {
+            timeout_ms = 800,
+            lsp_format = "fallback",
+        },
     }
     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     vim.api.nvim_create_user_command("Format", function(args)
@@ -342,7 +342,7 @@ now(function()
     add {
         source = "saghen/blink.cmp",
         depends = { "rafamadriz/friendly-snippets" },
-        checkout = "v0.8.1",
+        checkout = "v0.10.0",
     }
     require("blink.cmp").setup {
         keymap = {
