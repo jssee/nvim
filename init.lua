@@ -478,3 +478,32 @@ later(function()
         vim.cmd [[wincmd s]]
     end, { silent = true, desc = "spit window horizontally" })
 end)
+
+--  Avante
+add {
+    source = "yetone/avante.nvim",
+    monitor = "main",
+    depends = {
+        "stevearc/dressing.nvim",
+        "nvim-lua/plenary.nvim",
+        "MunifTanjim/nui.nvim",
+    },
+    hooks = {
+        post_checkout = function()
+            vim.cmd "make"
+        end,
+    },
+}
+add { source = "MeanderingProgrammer/render-markdown.nvim" }
+
+now(function()
+    require("avante_lib").load()
+end)
+later(function()
+    require("render-markdown").setup {
+        file_types = { "markdown", "Avante" },
+    }
+end)
+later(function()
+    require("avante").setup()
+end)
