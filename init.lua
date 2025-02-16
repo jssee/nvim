@@ -109,15 +109,21 @@ require("mini.deps").setup { path = { package = path_package } }
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
 now(function()
-    add "zenbones-theme/zenbones.nvim"
-    vim.g.zenwritten_compat = 1
-    -- vim.cmd.colo [[zenwritten]]
-
+    add {
+        source = "zenbones-theme/zenbones.nvim",
+        depends = { "rktjmp/lush.nvim" },
+    }
+    vim.g.zenwritten = {
+        transparent_background = true,
+        colorize_diagnostic_underline_text = true,
+    }
     add "folke/tokyonight.nvim"
     require("tokyonight").setup {
         transparent = true,
     }
-    vim.cmd.colo [[tokyonight]]
+    -- vim.cmd.colo [[tokyonight]]
+
+    vim.cmd.colo [[cockatoo]]
 
     add "sheerun/vim-polyglot"
 
@@ -482,7 +488,7 @@ end)
 --  Avante
 add {
     source = "yetone/avante.nvim",
-    monitor = "main",
+    checkout = "main",
     depends = {
         "stevearc/dressing.nvim",
         "nvim-lua/plenary.nvim",
