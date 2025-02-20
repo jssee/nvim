@@ -69,10 +69,10 @@ if vim.go.bg == 'dark' then
   c_magenta        = { '#dc8ed3', 176 }
   c_pigeon         = { '#8f9fbc', 103 }
   c_cumulonimbus   = { '#708296', 103 }
-  c_thunder        = { '#454e5a', 59  }
+  c_thunder        = { '#454e5a', 59 }
   c_smoke          = { '#e2e2e8', 254 }
   c_beige          = { '#b1aca7', 248 }
-  c_steel          = { '#606d86', 60  }
+  c_steel          = { '#606d86', 60 }
   c_iron           = { '#313742', 237 }
   c_deepsea        = { '#252B31', 238 }
   c_ocean          = { '#181B20', 237 }
@@ -83,9 +83,9 @@ if vim.go.bg == 'dark' then
   c_tea_blend      = { '#425858', 240 }
   c_aqua_blend     = { '#2f3f48', 238 }
   c_purple_blend   = { '#33374b', 238 }
-  c_lavender_blend = { '#4b4b6e', 60  }
-  c_scarlet_blend  = { '#4b323c', 52  }
-  c_wine_blend     = { '#3e3136', 52  }
+  c_lavender_blend = { '#4b4b6e', 60 }
+  c_scarlet_blend  = { '#4b323c', 52 }
+  c_wine_blend     = { '#3e3136', 52 }
   c_yellow_blend   = { '#4d4d50', 239 }
   c_smoke_blend    = { '#272d3a', 236 }
 else
@@ -96,20 +96,20 @@ else
   c_ochre          = { '#c84b2b', 166 }
   c_scarlet        = { '#d85959', 167 }
   c_wine           = { '#a52929', 124 }
-  c_tea            = { '#5f8c3f', 65  }
-  c_aqua           = { '#3b8f84', 66  }
-  c_turquoise      = { '#29647a', 24  }
-  c_flashlight     = { '#97c0dc', 110 }
-  c_skyblue        = { '#4c99d4', 68  }
-  c_cerulean       = { '#3c70b4', 25  }
+  c_tea            = { '#5f8c3f', 65 }
+  c_aqua           = { '#3b8f84', 66 }
+  c_turquoise      = { '#29647a', 24 }
+  c_flashlight     = { '#5F87A2', 110 }
+  c_skyblue        = { '#4c99d4', 68 }
+  c_cerulean       = { '#3c70b4', 25 }
   c_lavender       = { '#9d7bca', 140 }
   c_purple         = { '#8b71c7', 140 }
   c_magenta        = { '#ac4ea1', 132 }
-  c_pigeon         = { '#6666a8', 61  }
-  c_cumulonimbus   = { '#486a91', 60  }
+  c_pigeon         = { '#6666a8', 61 }
+  c_cumulonimbus   = { '#486a91', 60 }
   c_thunder        = { '#dfd6ce', 253 }
   c_smoke          = { '#404553', 238 }
-  c_beige          = { '#385372', 60  }
+  c_beige          = { '#385372', 60 }
   c_steel          = { '#9a978a', 247 }
   c_iron           = { '#b8b7b3', 249 }
   c_deepsea        = { '#e6ded6', 254 }
@@ -180,7 +180,7 @@ local hlgroups = {
   Cursor = { fg = c_space, bg = c_smoke },
   CursorColumn = { bg = c_ocean },
   CursorIM = { fg = c_space, bg = c_flashlight },
-  CursorLine = { bg = c_ocean },
+  CursorLine = { bg = c_deepsea },
   CursorLineNr = { fg = c_orange, bold = true },
   DebugPC = { bg = c_purple_blend },
   lCursor = { link = 'Cursor' },
@@ -275,7 +275,7 @@ local hlgroups = {
   Typedef = { fg = c_beige },
   Special = { fg = c_orange },
   SpecialChar = { link = 'Special' },
-  Tag = { fg = c_flashlight, underline = true },
+  Tag = { fg = c_flashlight },
   Delimiter = { fg = c_orange },
   Bracket = { fg = c_cumulonimbus },
   SpecialComment = { link = 'SpecialChar' },
