@@ -380,18 +380,6 @@ now(function()
             },
         },
     }
-
-    add "supermaven-inc/supermaven-nvim"
-    require("supermaven-nvim").setup {
-        color = {
-            suggestion_color = "#AA58A9",
-            cterm = 244,
-        },
-        keymaps = {
-            accept_suggestion = "<c-;>",
-            clear_suggestion = "<c-,>",
-        },
-    }
 end)
 
 later(function()
@@ -485,31 +473,38 @@ later(function()
     end, { silent = true, desc = "spit window horizontally" })
 end)
 
---  Avante
-add {
-    source = "yetone/avante.nvim",
-    checkout = "main",
-    depends = {
-        "stevearc/dressing.nvim",
-        "nvim-lua/plenary.nvim",
-        "MunifTanjim/nui.nvim",
-    },
-    hooks = {
-        post_checkout = function()
-            vim.cmd "make"
-        end,
-    },
-}
-add { source = "MeanderingProgrammer/render-markdown.nvim" }
-
-now(function()
-    require("avante_lib").load()
-end)
 later(function()
-    require("render-markdown").setup {
-        file_types = { "markdown", "Avante" },
+    add {
+        source = "yetone/avante.nvim",
+        depends = {
+            "nvim-treesitter/nvim-treesitter",
+            "stevearc/dressing.nvim",
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "MeanderingProgrammer/render-markdown.nvim",
+        },
+        checkout = "main",
+        hooks = {
+            post_checkout = function()
+                vim.cmd [[AvanteBuild]]
+            end,
+        },
     }
-end)
-later(function()
-    require("avante").setup()
+
+    require("render-markdown").setup {
+        file_types = {
+            "markdown",
+            "Avante",
+        },
+    }
+    require("avante").setup {}
+
+    add "supermaven-inc/supermaven-nvim"
+    require("supermaven-nvim").setup {
+        keymaps = {
+            accept_suggestion = "<c-;>",
+            accept_word = "<c-'>",
+            clear_suggestion = "<c-,>",
+        },
+    }
 end)
