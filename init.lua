@@ -497,7 +497,12 @@ later(function()
             "Avante",
         },
     }
-    require("avante").setup {}
+
+    require("avante").setup {
+        behaviour = {
+            enable_claude_text_editor_tool_mode = true,
+        },
+    }
 
     add "supermaven-inc/supermaven-nvim"
     require("supermaven-nvim").setup {
