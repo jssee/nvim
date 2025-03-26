@@ -18,7 +18,7 @@ vim.opt.infercase = true
 vim.opt.laststatus = 3
 vim.opt.list = true
 vim.opt.listchars =
-    { tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
+{ tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
 vim.opt.number = true
 vim.opt.ruler = false
 vim.opt.scrolloff = 999
@@ -36,10 +36,10 @@ vim.opt.textwidth = 80
 vim.opt.undodir = vim.fn.stdpath "cache" .. "/undo"
 vim.opt.undofile = true
 vim.opt.completeopt = {
-    "menuone", -- only show popup when theres more than one item
-    "popup", -- show extra info in popup
+    "menuone",  -- only show popup when theres more than one item
+    "popup",    -- show extra info in popup
     "noselect", -- do not auto select a match
-    "fuzzy", -- enable fuzzy-matching
+    "fuzzy",    -- enable fuzzy-matching
 }
 
 --@keymaps
