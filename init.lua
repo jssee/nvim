@@ -348,7 +348,8 @@ now(function()
     add {
         source = "saghen/blink.cmp",
         depends = { "rafamadriz/friendly-snippets" },
-        checkout = "v0.10.0",
+        checkout = "v1.0.0",
+        monitor = "main",
     }
     require("blink.cmp").setup {
         keymap = {
