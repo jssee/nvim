@@ -44,6 +44,7 @@ vim.opt.completeopt = {
 
 --@keymaps
 vim.keymap.set({ "n", "x" }, ";", ":", { desc = "command mode" })
+vim.keymap.set({ "n", "x" }, ":", ";")
 vim.keymap.set({ "i", "c" }, "kj", "<esc>")
 vim.keymap.set({ "i", "c" }, "kj", "<esc>")
 vim.keymap.set("n", "j", [[gj]])
@@ -109,34 +110,20 @@ require("mini.deps").setup { path = { package = path_package } }
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
 now(function()
-    add {
-        source = "zenbones-theme/zenbones.nvim",
-        depends = { "rktjmp/lush.nvim" },
-    }
-    vim.g.zenwritten = {
-        transparent_background = true,
-        colorize_diagnostic_underline_text = true,
-    }
-    add "folke/tokyonight.nvim"
-    require("tokyonight").setup {
-        transparent = true,
-    }
-    -- vim.cmd.colo [[tokyonight]]
-
-    vim.cmd.colo [[cockatoo]]
-
     add "sheerun/vim-polyglot"
 
-    add "cormacrelf/dark-notify"
-    require("dark_notify").run {}
+    add "webhooked/kanso.nvim"
+    require("kanso").setup {
+        overrides = function(colors)
+            return {
+                StatusLine = { bg = colors.theme.ui.bg_p1 },
+            }
+        end,
+    }
+    vim.cmd.colo [[kanso]]
 
     add "strash/everybody-wants-that-line.nvim"
     require("everybody-wants-that-line").setup { filename = { enabled = false } }
-
-    add "bekaboo/dropbar.nvim"
-    vim.keymap.set("n", "<leader>-", function()
-        require("dropbar.api").pick()
-    end, { silent = true, desc = "pick symbol" })
 end)
 
 later(function()
@@ -231,8 +218,8 @@ later(function()
     add {
         source = "neovim/nvim-lspconfig",
         depends = {
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
+            "mason-org/mason.nvim",
+            "mason-org/mason-lspconfig.nvim",
             "yioneko/nvim-vtsls",
             "saghen/blink.nvim",
         },
@@ -475,42 +462,38 @@ later(function()
 end)
 
 later(function()
-    add {
-        source = "yetone/avante.nvim",
-        depends = {
-            "nvim-treesitter/nvim-treesitter",
-            "stevearc/dressing.nvim",
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "MeanderingProgrammer/render-markdown.nvim",
-        },
-        checkout = "main",
-        hooks = {
-            post_checkout = function()
-                vim.cmd [[AvanteBuild]]
-            end,
+    add "folke/flash.nvim"
+    require("flash").setup {
+        modes = {
+            search = {
+                enabled = true,
+            },
         },
     }
+    vim.keymap.set("o", "r", function()
+        require("flash").remote()
+    end, { silent = true, desc = "flash remote" })
 
-    require("render-markdown").setup {
-        file_types = {
-            "markdown",
-            "Avante",
-        },
-    }
+    vim.keymap.set("c", "<c-s>", function()
+        require("flash").toggle()
+    end, { silent = true, desc = "flash remote" })
+end)
 
-    require("avante").setup {
-        behaviour = {
-            enable_claude_text_editor_tool_mode = true,
-        },
+later(function()
+    add "stevearc/aerial.nvim"
+    require("aerial").setup {
+        on_attach = function(bufnr)
+            vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+            vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+        end,
     }
+    vim.keymap.set("n", "<leader>aa", "<cmd>AerialToggle!<CR>")
+    vim.keymap.set("n", "<leader>at", "<cmd>AerialNavToggle<CR>")
+end)
 
-    add "supermaven-inc/supermaven-nvim"
-    require("supermaven-nvim").setup {
-        keymaps = {
-            accept_suggestion = "<c-;>",
-            accept_word = "<c-'>",
-            clear_suggestion = "<c-,>",
-        },
-    }
+later(function()
+    add "stevearc/overseer.nvim"
+    require("overseer").setup {}
+    vim.keymap.set("n", "<leader>oo", "<cmd>OverseerRun<CR>")
+    vim.keymap.set("n", "<leader>ot", "<cmd>OverseerToggle<CR>")
 end)
