@@ -246,7 +246,7 @@ later(function()
         callback = function(event)
             local on_attach = function(client, _)
                 -- disable lsp formatting in favor of conform
-                client.server_capabilities.docuementFormattingProvider = false
+                client.server_capabilities.documentFormattingProvider = false
                 client.server_capabilities.documentRangeFormattingProvider =
                     false
             end
