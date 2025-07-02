@@ -376,6 +376,8 @@ later(function()
         depends = { "sindrets/diffview.nvim", "nvim-lua/plenary.nvim" },
     }
     require("neogit").setup {
+        disable_hint = true,
+        graph_style = "kitty",
         integrations = {
             diffview = true,
             mini_pick = true,
