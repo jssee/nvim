@@ -473,10 +473,15 @@ later(function()
             },
         },
     }
-    vim.keymap.set("o", "r", function()
+    vim.keymap.set("o", "q", function()
         require("flash").remote()
     end, { silent = true, desc = "flash remote" })
-
+    vim.keymap.set({ "n", "x" }, "q", function()
+        require("flash").jump()
+    end, { desc = "flash jump" })
+    vim.keymap.set({ "n", "x" }, "Q", function()
+        require("flash").treesitter()
+    end, { desc = "flash jump" })
     vim.keymap.set("c", "<c-s>", function()
         require("flash").toggle()
     end, { silent = true, desc = "flash remote" })
