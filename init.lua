@@ -512,3 +512,22 @@ later(function()
     }
     require("tailwind-tools").setup {}
 end)
+
+later(function()
+    add {
+        source = "yetone/avante.nvim",
+        monitor = "main",
+        depends = {
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "MeanderingProgrammer/render-markdown.nvim",
+        },
+        hooks = {
+            post_checkout = function(data)
+                vim.system({ "make" }, { cwd = data.path }):wait()
+            end,
+        },
+    }
+    require("render-markdown").setup {}
+    require("avante").setup {}
+end)
