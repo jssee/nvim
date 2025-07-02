@@ -19,11 +19,11 @@ vim.opt.laststatus = 3
 vim.opt.list = true
 vim.opt.listchars =
     { tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
-vim.opt.number = true
+-- vim.opt.number = true
 vim.opt.ruler = false
 vim.opt.scrolloff = 999
 vim.opt.shiftround = true
-vim.opt.signcolumn = "number"
+vim.opt.signcolumn = "yes:1"
 vim.opt.showcmd = false
 vim.opt.showmode = false
 vim.opt.smartcase = true
