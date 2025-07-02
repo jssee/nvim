@@ -395,6 +395,9 @@ later(function()
     vim.keymap.set("n", "<leader>gg", function()
         require("neogit").open()
     end, { silent = true, desc = "git status" })
+    vim.keymap.set("n", "<leader>gc", function()
+        require("neogit").open { "commit" }
+    end, { silent = true, desc = "git commit" })
     vim.keymap.set("n", "<leader>gh", function()
         vim.cmd.DiffviewFileHistory "%"
     end, { silent = true, desc = "git status" })
@@ -496,4 +499,16 @@ later(function()
     require("overseer").setup {}
     vim.keymap.set("n", "<leader>oo", "<cmd>OverseerRun<CR>")
     vim.keymap.set("n", "<leader>ot", "<cmd>OverseerToggle<CR>")
+end)
+
+later(function()
+    add {
+        source = "luckasRanarison/tailwind-tools.nvim",
+        hooks = {
+            post_checkout = function()
+                vim.cmd [[UpdateRemotePlugins]]
+            end,
+        },
+    }
+    require("tailwind-tools").setup {}
 end)
