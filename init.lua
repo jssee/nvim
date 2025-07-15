@@ -538,3 +538,14 @@ later(function()
     require("render-markdown").setup {}
     require("avante").setup {}
 end)
+
+later(function()
+    add "supermaven-inc/supermaven-nvim"
+    require("supermaven-nvim").setup {
+        keymaps = {
+            accept_suggestion = "<c-,>",
+            clear_suggestion = "<c-.>",
+            accept_word = "<c-j>",
+        },
+    }
+end)
