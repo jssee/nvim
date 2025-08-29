@@ -11,7 +11,7 @@ vim.opt.cursorline = true
 vim.opt.cursorlineopt = { "number" }
 vim.opt.expandtab = true
 vim.opt.exrc = true
-vim.opt.fillchars = vim.opt.fillchars:append { diff = " " }
+vim.opt.fillchars = { diff = "╱" }
 vim.opt.grepprg = [[rg --vimgrep]]
 vim.opt.ignorecase = true
 vim.opt.infercase = true
@@ -46,14 +46,11 @@ vim.opt.completeopt = {
 vim.keymap.set({ "n", "x" }, ";", ":", { desc = "command mode" })
 vim.keymap.set({ "n", "x" }, ":", ";")
 vim.keymap.set({ "i", "c" }, "kj", "<esc>")
-vim.keymap.set({ "i", "c" }, "kj", "<esc>")
 vim.keymap.set("n", "j", [[gj]])
 vim.keymap.set("n", "k", [[gk]])
 vim.keymap.set("n", "*", [[*zvzzN]])
 vim.keymap.set("n", "n", [[nzvzz]])
 vim.keymap.set("n", "N", [[Nzvzz]])
-vim.keymap.set("n", "<tab>", [[<cmd>bnext<cr>]], { desc = "next buffer" })
-vim.keymap.set("n", "<s-tab>", [[<cmd>bprev<cr>]], { desc = "prev buffer" })
 vim.keymap.set("n", "<backspace>", [[^]])
 vim.keymap.set("n", "q", "<nop>")
 
@@ -98,7 +95,7 @@ if not vim.loop.fs_stat(mini_path) then
         "git",
         "clone",
         "--filter=blob:none",
-        "https://github.com/echasnovski/mini.nvim",
+        "https://github.com/nvim-mini/mini.nvim",
         mini_path,
     }
     vim.fn.system(clone_cmd)
@@ -302,6 +299,8 @@ later(function()
             typescript = { "prettierd" },
             typescriptreact = { "prettierd" },
             go = { "gofmt" },
+            elixir = { "mix", "format" },
+            heex = { "mix", "format" },
         },
         format_on_save = {
             timeout_ms = 800,
@@ -497,15 +496,22 @@ later(function()
             vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
         end,
     }
-    vim.keymap.set("n", "<leader>aa", "<cmd>AerialToggle!<CR>")
-    vim.keymap.set("n", "<leader>at", "<cmd>AerialNavToggle<CR>")
+    vim.keymap.set("n", "<leader>-", "<cmd>AerialToggle!<CR>")
+    vim.keymap.set("n", "<leader>_", "<cmd>AerialNavToggle<CR>")
 end)
 
 later(function()
     add "stevearc/overseer.nvim"
     require("overseer").setup {}
-    vim.keymap.set("n", "<leader>oo", "<cmd>OverseerRun<CR>")
-    vim.keymap.set("n", "<leader>ot", "<cmd>OverseerToggle<CR>")
+    vim.keymap.set("n", "<leader>oo", "<cmd>OverseerToggle<CR>")
+    vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<CR>")
+    vim.keymap.set("n", "<leader>oc", "<cmd>OverseerRunCmd<CR>")
+    vim.keymap.set("n", "<leader>ol", "<cmd>OverseerLoadBundle<CR>")
+end)
+
+later(function()
+    add "stevearc/stickybuf.nvim"
+    require("stickybuf").setup {}
 end)
 
 later(function()
@@ -543,7 +549,7 @@ later(function()
     add "supermaven-inc/supermaven-nvim"
     require("supermaven-nvim").setup {
         keymaps = {
-            accept_suggestion = "<c-,>",
+            accept_suggestion = "<c-;>",
             clear_suggestion = "<c-.>",
             accept_word = "<c-j>",
         },
