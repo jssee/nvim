@@ -87,23 +87,8 @@ vim.api.nvim_create_autocmd("WinResized", {
 })
 
 --@deps
-local path_package = vim.fn.stdpath "data" .. "/site/"
-local mini_path = path_package .. "pack/deps/start/mini.nvim"
-if not vim.loop.fs_stat(mini_path) then
-    vim.cmd [[echo "Installing `mini.nvim`" | redraw]]
-    local clone_cmd = {
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/nvim-mini/mini.nvim",
-        mini_path,
-    }
-    vim.fn.system(clone_cmd)
-    vim.cmd [[packadd mini.nvim | helptags ALL]]
-    vim.cmd [[echo "Installed `mini.nvim`" | redraw]]
-end
-
-require("mini.deps").setup { path = { package = path_package } }
+vim.pack.add { "https://github.com/nvim-mini/mini.nvim" }
+require("mini.deps").setup {}
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
 now(function()
