@@ -96,16 +96,19 @@ now(function()
 
     add "webhooked/kanso.nvim"
     require("kanso").setup {
-        overrides = function(colors)
-            return {
-                StatusLine = { bg = colors.theme.ui.bg_p1 },
-            }
-        end,
+        background = {
+            light = "pearl",
+        },
     }
     vim.cmd.colo [[kanso]]
 
     add "strash/everybody-wants-that-line.nvim"
-    require("everybody-wants-that-line").setup { filename = { enabled = false } }
+    require("everybody-wants-that-line").setup {
+        filename = { enabled = false },
+        separator = " ",
+    }
+end)
+
 end)
 
 later(function()
@@ -203,25 +206,11 @@ later(function()
             "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
             "yioneko/nvim-vtsls",
-            "saghen/blink.nvim",
         },
     }
-    local lsp = require "lspconfig"
-    local default_handler = function(server)
-        local capabilities = require("blink.cmp").get_lsp_capabilities()
-        lsp[server].setup {
-            capabilities = capabilities,
-        }
-    end
     require("mason").setup()
-    require("mason-lspconfig").setup {
-        ensure_installed = {
-            "lua_ls",
-        },
-        handlers = {
-            default_handler,
-        },
-    }
+    require("mason-lspconfig").setup {}
+
     vim.api.nvim_create_autocmd("LspAttach", {
         desc = "setup lsp actions",
         group = vim.api.nvim_create_augroup("lsp", { clear = true }),
@@ -313,45 +302,6 @@ later(function()
             range = range,
         }
     end, { range = true })
-end)
-
-now(function()
-    add {
-        source = "saghen/blink.cmp",
-        depends = { "rafamadriz/friendly-snippets" },
-        checkout = "v1.0.0",
-        monitor = "main",
-    }
-    require("blink.cmp").setup {
-        keymap = {
-            preset = "super-tab",
-        },
-        signature = {
-            enabled = true,
-        },
-        completion = {
-            menu = {
-                draw = {
-                    components = {
-                        kind_icon = {
-                            ellipsis = false,
-                            text = function(ctx)
-                                local kind_icon, _, _ =
-                                    require("mini.icons").get("lsp", ctx.kind)
-                                return kind_icon
-                            end,
-                            -- Optionally, you may also use the highlights from mini.icons
-                            highlight = function(ctx)
-                                local _, hl, _ =
-                                    require("mini.icons").get("lsp", ctx.kind)
-                                return hl
-                            end,
-                        },
-                    },
-                },
-            },
-        },
-    }
 end)
 
 later(function()
@@ -452,37 +402,16 @@ end)
 
 later(function()
     add "folke/flash.nvim"
-    require("flash").setup {
-        modes = {
-            search = {
-                enabled = true,
-            },
-        },
-    }
-    vim.keymap.set("o", "q", function()
+    require("flash").setup {}
+    vim.keymap.set("o", "s", function()
         require("flash").remote()
     end, { silent = true, desc = "flash remote" })
-    vim.keymap.set({ "n", "x" }, "q", function()
+    vim.keymap.set({ "n", "x" }, "<leader>s", function()
         require("flash").jump()
     end, { desc = "flash jump" })
-    vim.keymap.set({ "n", "x" }, "Q", function()
+    vim.keymap.set({ "n", "x" }, "<leader>S", function()
         require("flash").treesitter()
     end, { desc = "flash jump" })
-    vim.keymap.set("c", "<c-s>", function()
-        require("flash").toggle()
-    end, { silent = true, desc = "flash remote" })
-end)
-
-later(function()
-    add "stevearc/aerial.nvim"
-    require("aerial").setup {
-        on_attach = function(bufnr)
-            vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-            vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-        end,
-    }
-    vim.keymap.set("n", "<leader>-", "<cmd>AerialToggle!<CR>")
-    vim.keymap.set("n", "<leader>_", "<cmd>AerialNavToggle<CR>")
 end)
 
 later(function()
@@ -497,37 +426,6 @@ end)
 later(function()
     add "stevearc/stickybuf.nvim"
     require("stickybuf").setup {}
-end)
-
-later(function()
-    add {
-        source = "luckasRanarison/tailwind-tools.nvim",
-        hooks = {
-            post_checkout = function()
-                vim.cmd [[UpdateRemotePlugins]]
-            end,
-        },
-    }
-    require("tailwind-tools").setup {}
-end)
-
-later(function()
-    add {
-        source = "yetone/avante.nvim",
-        monitor = "main",
-        depends = {
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "MeanderingProgrammer/render-markdown.nvim",
-        },
-        hooks = {
-            post_checkout = function(data)
-                vim.system({ "make" }, { cwd = data.path }):wait()
-            end,
-        },
-    }
-    require("render-markdown").setup {}
-    require("avante").setup {}
 end)
 
 later(function()
