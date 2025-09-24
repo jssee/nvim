@@ -40,6 +40,7 @@ vim.opt.completeopt = {
     "popup", -- show extra info in popup
     "noselect", -- do not auto select a match
     "fuzzy", -- enable fuzzy-matching
+    "nosort",
 }
 
 --@keymaps
@@ -109,6 +110,46 @@ now(function()
     }
 end)
 
+now(function()
+    local MiniCompletion = require "mini.completion"
+    local MiniSnippets = require "mini.snippets"
+    local MiniMultiKeymap = require("mini.keymap").map_multistep
+
+    local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
+    local process_items = function(items, base)
+        return MiniCompletion.default_process_items(
+            items,
+            base,
+            process_items_opts
+        )
+    end
+
+    MiniSnippets.setup {
+        snippets = {
+            MiniSnippets.gen_loader.from_lang(),
+        },
+    }
+
+    MiniCompletion.setup {
+        lsp_completion = {
+            source_func = "omnifunc",
+            auto_setup = false,
+            process_items = process_items,
+        },
+    }
+
+    -- Set up LSP part of completion
+    local on_attach = function(args)
+        vim.bo[args.buf].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
+    end
+    vim.api.nvim_create_autocmd("LspAttach", { callback = on_attach })
+    vim.lsp.config(
+        "*",
+        { capabilities = MiniCompletion.get_lsp_capabilities() }
+    )
+
+    MiniMultiKeymap("i", "<Tab>", { "pmenu_next", "minisnippets_next" })
+    MiniMultiKeymap("i", "<S-Tab>", { "pmenu_prev", "minisnippets_prev" })
 end)
 
 later(function()
@@ -166,6 +207,7 @@ later(function()
     require("mini.extra").setup {}
     require("mini.surround").setup {}
     require("mini.icons").setup {}
+    require("mini.icons").tweak_lsp_kind()
     require("mini.notify").setup {
         window = {
             config = {
