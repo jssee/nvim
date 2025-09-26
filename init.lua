@@ -112,10 +112,11 @@ end)
 
 now(function()
     local MiniCompletion = require "mini.completion"
-    local MiniSnippets = require "mini.snippets"
-    local MiniMultiKeymap = require("mini.keymap").map_multistep
+    local MiniMapMulti = require("mini.keymap").map_multistep
 
-    local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
+    local process_items_opts =
+        -- filter out Text and Snippet items, use fuzzy matching
+        { filtersort = "fuzzy", kind_priority = { Text = -1, Snippet = -1 } }
     local process_items = function(items, base)
         return MiniCompletion.default_process_items(
             items,
@@ -123,12 +124,6 @@ now(function()
             process_items_opts
         )
     end
-
-    MiniSnippets.setup {
-        snippets = {
-            MiniSnippets.gen_loader.from_lang(),
-        },
-    }
 
     MiniCompletion.setup {
         lsp_completion = {
@@ -138,7 +133,6 @@ now(function()
         },
     }
 
-    -- Set up LSP part of completion
     local on_attach = function(args)
         vim.bo[args.buf].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
     end
@@ -148,8 +142,16 @@ now(function()
         { capabilities = MiniCompletion.get_lsp_capabilities() }
     )
 
-    MiniMultiKeymap("i", "<Tab>", { "pmenu_next", "minisnippets_next" })
-    MiniMultiKeymap("i", "<S-Tab>", { "pmenu_prev", "minisnippets_prev" })
+    MiniMapMulti(
+        "i",
+        "<Tab>",
+        { "pmenu_next", "increase_indent", "jump_after_close" }
+    )
+    MiniMapMulti(
+        "i",
+        "<S-Tab>",
+        { "pmenu_prev", "decrease_indent", "jump_before_open" }
+    )
 end)
 
 later(function()
