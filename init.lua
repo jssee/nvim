@@ -499,3 +499,21 @@ later(function()
 
     vim.keymap.set({ "n", "x" }, "<leader>p", vim.cmd.YankyRingHistory)
 end)
+
+later(function()
+    add "folke/sidekick.nvim"
+    require("sidekick").setup {
+        nes = {
+            enabled = false,
+        },
+    }
+    vim.keymap.set({ "n", "v" }, "<leader>aa", function()
+        require("sidekick.cli").toggle { focus = true }
+    end, { silent = true, desc = "toggle sidekick" })
+    vim.keymap.set({ "n", "x", "t" }, "<c-.>", function()
+        require("sidekick.cli").focus()
+    end, { silent = true, desc = "switch focus" })
+    vim.keymap.set({ "n", "x", "t" }, "<leader>ap", function()
+        require("sidekick.cli").select_prompt()
+    end, { silent = true, desc = "ask prompt" })
+end)
