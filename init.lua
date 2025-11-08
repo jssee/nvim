@@ -19,7 +19,7 @@ vim.opt.laststatus = 3
 vim.opt.list = true
 vim.opt.listchars =
     { tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
--- vim.opt.number = true
+vim.opt.number = true
 vim.opt.ruler = false
 vim.opt.scrolloff = 999
 vim.opt.shiftround = true
