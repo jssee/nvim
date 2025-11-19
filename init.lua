@@ -463,8 +463,7 @@ later(function()
     require("overseer").setup {}
     vim.keymap.set("n", "<leader>oo", "<cmd>OverseerToggle<CR>")
     vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<CR>")
-    vim.keymap.set("n", "<leader>oc", "<cmd>OverseerRunCmd<CR>")
-    vim.keymap.set("n", "<leader>ol", "<cmd>OverseerLoadBundle<CR>")
+    vim.keymap.set("n", "<leader>os", "<cmd>OverseerShell<CR>")
 end)
 
 later(function()
