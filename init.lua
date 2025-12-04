@@ -88,6 +88,7 @@ vim.api.nvim_create_autocmd("WinResized", {
 })
 
 --@deps
+vim.cmd.packadd [[nvim.undotree]]
 vim.pack.add { "https://github.com/nvim-mini/mini.nvim" }
 require("mini.deps").setup {}
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
