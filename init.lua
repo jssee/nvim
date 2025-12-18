@@ -206,6 +206,7 @@ later(function()
     require("mini.ai").setup {}
     require("mini.align").setup {}
     require("mini.bracketed").setup {}
+    require("mini.cmdline").setup {}
     require("mini.diff").setup {}
     require("mini.extra").setup {}
     require("mini.surround").setup {}
