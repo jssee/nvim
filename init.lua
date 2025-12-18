@@ -502,19 +502,52 @@ later(function()
 end)
 
 later(function()
-    add "folke/sidekick.nvim"
-    require("sidekick").setup {
-        nes = {
-            enabled = false,
+    add {
+        source = "coder/claudecode.nvim",
+        depends = {
+            "folke/snacks.nvim",
         },
     }
-    vim.keymap.set({ "n", "v" }, "<leader>aa", function()
-        require("sidekick.cli").toggle { focus = true }
-    end, { silent = true, desc = "toggle sidekick" })
-    vim.keymap.set({ "n", "x", "t" }, "<c-.>", function()
-        require("sidekick.cli").focus()
-    end, { silent = true, desc = "switch focus" })
-    vim.keymap.set({ "n", "x", "t" }, "<leader>ap", function()
-        require("sidekick.cli").select_prompt()
-    end, { silent = true, desc = "ask prompt" })
+    local toggle_key = "<C-,>"
+    require("claudecode").setup {
+        terminal = {
+            snacks_win_opts = {
+                position = "right",
+                width = 0.4,
+                height = 1.0,
+                border = "rounded",
+                keys = {
+                    claude_hide = {
+                        toggle_key,
+                        function(self)
+                            self:hide()
+                        end,
+                        mode = "t",
+                        desc = "Hide",
+                    },
+                },
+            },
+        },
+        diff_opts = {
+            open_in_current_tab = false,
+        },
+    }
+    vim.keymap.set(
+        { "n", "x" },
+        toggle_key,
+        "<cmd>ClaudeCodeFocus<cr>",
+        { silent = true, desc = "claudecode toggle" }
+    )
+    vim.keymap.set(
+        { "n", "x" },
+        "<leader>da",
+        "<cmd>ClaudeCodeDiffAccept<cr>",
+        { silent = true, desc = "claudecode diff accept" }
+    )
+    vim.keymap.set(
+        { "n", "x" },
+        "<leader>dd",
+        "<cmd>ClaudeCodeDiffDeny<cr>",
+        { silent = true, desc = "claudecode diff deny" }
+    )
 end)
