@@ -33,7 +33,6 @@ vim.opt.splitright = true
 vim.opt.swapfile = false
 vim.opt.tabstop = 4
 vim.opt.textwidth = 200
-vim.opt.undodir = vim.fn.stdpath "cache" .. "/undo"
 vim.opt.undofile = true
 vim.opt.completeopt = {
     "menuone", -- only show popup when theres more than one item
@@ -87,75 +86,9 @@ vim.api.nvim_create_autocmd("WinResized", {
     end,
 })
 
---@deps
-vim.cmd.packadd [[nvim.undotree]]
-vim.pack.add { "https://github.com/nvim-mini/mini.nvim" }
-require("mini.deps").setup {}
-local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
+--@packages
 
-now(function()
-    add "sheerun/vim-polyglot"
-
-    add "webhooked/kanso.nvim"
-    require("kanso").setup {
-        background = {
-            light = "pearl",
-        },
-    }
-    vim.cmd.colo [[kanso]]
-
-    add "strash/everybody-wants-that-line.nvim"
-    require("everybody-wants-that-line").setup {
-        filename = { enabled = false },
-        separator = " ",
-    }
-end)
-
-now(function()
-    local MiniCompletion = require "mini.completion"
-    local MiniMapMulti = require("mini.keymap").map_multistep
-
-    local process_items_opts =
-        -- filter out Text and Snippet items, use fuzzy matching
-        { filtersort = "fuzzy", kind_priority = { Text = -1, Snippet = -1 } }
-    local process_items = function(items, base)
-        return MiniCompletion.default_process_items(
-            items,
-            base,
-            process_items_opts
-        )
-    end
-
-    MiniCompletion.setup {
-        lsp_completion = {
-            source_func = "omnifunc",
-            auto_setup = false,
-            process_items = process_items,
-        },
-    }
-
-    local on_attach = function(args)
-        vim.bo[args.buf].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
-    end
-    vim.api.nvim_create_autocmd("LspAttach", { callback = on_attach })
-    vim.lsp.config(
-        "*",
-        { capabilities = MiniCompletion.get_lsp_capabilities() }
-    )
-
-    MiniMapMulti(
-        "i",
-        "<Tab>",
-        { "pmenu_next", "increase_indent", "jump_after_close" }
-    )
-    MiniMapMulti(
-        "i",
-        "<S-Tab>",
-        { "pmenu_prev", "decrease_indent", "jump_before_open" }
-    )
-end)
-
-later(function()
+local setup_files = function()
     require("mini.files").setup {
         mappings = {
             go_in_plus = "l",
@@ -199,29 +132,9 @@ later(function()
             map_split(buf_id, "v", "belowright vertical")
         end,
     })
-end)
+end
 
-later(function()
-    require("mini.pairs").setup {}
-    require("mini.ai").setup {}
-    require("mini.align").setup {}
-    require("mini.bracketed").setup {}
-    require("mini.cmdline").setup {}
-    require("mini.diff").setup {}
-    require("mini.extra").setup {}
-    require("mini.surround").setup {}
-    require("mini.icons").setup {}
-    require("mini.icons").tweak_lsp_kind()
-    require("mini.notify").setup {
-        window = {
-            config = {
-                border = "none",
-            },
-        },
-    }
-    local notify_opts = { ERROR = { duration = 10000 } }
-    vim.notify = require("mini.notify").make_notify(notify_opts)
-
+local setup_picker = function()
     require("mini.pick").setup {
         window = {
             config = {
@@ -243,311 +156,476 @@ later(function()
     vim.keymap.set("n", "<leader>z", function()
         require("mini.pick").builtin.resume()
     end, { silent = true, desc = "resume last picker" })
-end)
+end
 
-later(function()
-    add {
-        source = "neovim/nvim-lspconfig",
-        depends = {
-            "mason-org/mason.nvim",
-            "mason-org/mason-lspconfig.nvim",
-            "yioneko/nvim-vtsls",
+local setup_completion = function()
+    local MiniCompletion = require "mini.completion"
+    local MiniMapMulti = require("mini.keymap").map_multistep
+
+    local process_items_opts =
+        -- filter out Text and Snippet items, use fuzzy matching
+        { filtersort = "fuzzy", kind_priority = { Text = -1, Snippet = -1 } }
+    local process_items = function(items, base)
+        return MiniCompletion.default_process_items(
+            items,
+            base,
+            process_items_opts
+        )
+    end
+
+    MiniCompletion.setup {
+        lsp_completion = {
+            source_func = "omnifunc",
+            auto_setup = false,
+            process_items = process_items,
         },
     }
-    require("mason").setup()
-    require("mason-lspconfig").setup {}
 
-    vim.api.nvim_create_autocmd("LspAttach", {
-        desc = "setup lsp actions",
-        group = vim.api.nvim_create_augroup("lsp", { clear = true }),
-        callback = function(event)
-            local on_attach = function(client, _)
-                -- disable lsp formatting in favor of conform
-                client.server_capabilities.documentFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider =
-                    false
-            end
-            local client = vim.lsp.get_client_by_id(event.data.client_id)
-            on_attach(client, event.buf)
-        end,
-    })
-end)
+    local on_attach = function(args)
+        vim.bo[args.buf].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
+    end
+    vim.api.nvim_create_autocmd("LspAttach", { callback = on_attach })
+    vim.lsp.config(
+        "*",
+        { capabilities = MiniCompletion.get_lsp_capabilities() }
+    )
 
-later(function()
-    add {
-        source = "nvim-treesitter/nvim-treesitter",
-        depends = {
-            "joosepalviste/nvim-ts-context-commentstring",
-            "windwp/nvim-ts-autotag",
-        },
-        hooks = {
-            post_checkout = function()
-                vim.cmd [[TSUpdate]]
+    MiniMapMulti(
+        "i",
+        "<Tab>",
+        { "pmenu_next", "increase_indent", "jump_after_close" }
+    )
+    MiniMapMulti(
+        "i",
+        "<S-Tab>",
+        { "pmenu_prev", "decrease_indent", "jump_before_open" }
+    )
+end
+
+vim.pack.add({
+    "https://github.com/nvim-lua/plenary.nvim",
+    "https://github.com/folke/snacks.nvim",
+    "https://github.com/sindrets/diffview.nvim",
+    "https://github.com/yioneko/nvim-vtsls",
+    {
+        src = "https://github.com/folke/tokyonight.nvim",
+        data = {
+            setup = function()
+                vim.cmd.colo [[tokyonight]]
             end,
         },
-    }
-    require("nvim-treesitter.configs").setup {
-        auto_install = true,
-        highlight = { enable = true },
-        indent = { enable = true },
-        autotag = {
-            enable = true,
+    },
+    {
+        src = "https://github.com/strash/everybody-wants-that-line.nvim",
+        data = {
+            setup = function()
+                require("everybody-wants-that-line").setup {
+                    filename = { enabled = false },
+                    separator = " ",
+                }
+            end,
         },
-        incremental_selection = {
-            enable = true,
-            keymaps = {
-                init_selection = "<cr>",
-                node_incremental = "<cr>",
-                node_decremental = "<s-cr>",
-            },
-        },
-    }
-    require("nvim-ts-autotag").setup {}
-end)
-
-later(function()
-    add "stevearc/conform.nvim"
-    require("conform").setup {
-        formatters_by_ft = {
-            astro = { "prettierd" },
-            css = { "prettierd" },
-            html = { "prettierd" },
-            javascript = { "prettierd" },
-            javascriptreact = { "prettierd" },
-            lua = { "stylua" },
-            svelte = { "prettierd" },
-            typescript = { "prettierd" },
-            typescriptreact = { "prettierd" },
-            go = { "gofmt" },
-            elixir = { "mix", "format" },
-            heex = { "mix", "format" },
-        },
-        format_on_save = {
-            timeout_ms = 800,
-            lsp_format = "fallback",
-        },
-    }
-    vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-    vim.api.nvim_create_user_command("Format", function(args)
-        local range = nil
-        if args.count ~= -1 then
-            local end_line = vim.api.nvim_buf_get_lines(
-                0,
-                args.line2 - 1,
-                args.line2,
-                true
-            )[1]
-            range = {
-                start = { args.line1, 0 },
-                ["end"] = { args.line2, end_line:len() },
-            }
-        end
-        require("conform").format {
-            async = true,
-            lsp_fallback = true,
-            range = range,
-        }
-    end, { range = true })
-end)
-
-later(function()
-    add {
-        source = "neogitorg/neogit",
-        depends = { "sindrets/diffview.nvim", "nvim-lua/plenary.nvim" },
-    }
-    require("neogit").setup {
-        disable_hint = true,
-        graph_style = "kitty",
-        integrations = {
-            diffview = true,
-            mini_pick = true,
-        },
-        sections = {
-            recent = { folded = false },
-        },
-        signs = {
-            -- { CLOSED, OPENED }
-            section = { "▸", "▾" },
-            item = { "▸", "▾" },
-        },
-    }
-    require("diffview").setup {
-        use_icons = false,
-    }
-    vim.keymap.set("n", "<leader>gg", function()
-        require("neogit").open()
-    end, { silent = true, desc = "git status" })
-    vim.keymap.set("n", "<leader>gc", function()
-        require("neogit").open { "commit" }
-    end, { silent = true, desc = "git commit" })
-    vim.keymap.set("n", "<leader>gh", function()
-        vim.cmd.DiffviewFileHistory "%"
-    end, { silent = true, desc = "git status" })
-end)
-
-later(function()
-    add {
-        source = "stevearc/quicker.nvim",
-        depends = {
-            "romainl/vim-qf",
-        },
-    }
-    vim.g.qf_mapping_ack_style = 1
-    require("quicker").setup {
-        highlight = {
-            lsp = false,
-            load_buffers = false,
-        },
-        keys = {
-            {
-                ">",
-                function()
-                    require("quicker").expand {
-                        before = 2,
-                        after = 2,
-                        add_to_existing = true,
-                    }
-                end,
-                desc = "expand qf context",
-            },
-            {
-                "<",
-                function()
-                    require("quicker").collapse()
-                end,
-                desc = "collapse qf context",
-            },
-        },
-    }
-    vim.keymap.set("n", "<leader>q", function()
-        require("quicker").toggle()
-    end, { silent = true, desc = "toggle quickfix" })
-    vim.keymap.set("n", "<leader>l", function()
-        require("quicker").toggle { loclist = true }
-    end, { silent = true, desc = "toggle loclist" })
-end)
-
-later(function()
-    add "ten3roberts/window-picker.nvim"
-    vim.keymap.set("n", "<leader>ww", function()
-        vim.cmd [[WindowPick]]
-    end, { silent = true, desc = "pick window" })
-    vim.keymap.set("n", "<leader>wq", function()
-        vim.cmd [[WindowZap]]
-    end, { silent = true, desc = "close window" })
-    vim.keymap.set("n", "<leader>wo", function()
-        vim.cmd [[wincmd o]]
-    end, { silent = true, desc = "close all other windows" })
-    vim.keymap.set("n", "<leader>wv", function()
-        vim.cmd [[wincmd v]]
-    end, { silent = true, desc = "spit window vertically" })
-    vim.keymap.set("n", "<leader>ws", function()
-        vim.cmd [[wincmd s]]
-    end, { silent = true, desc = "spit window horizontally" })
-end)
-
-later(function()
-    add "folke/flash.nvim"
-    require("flash").setup {}
-    vim.keymap.set("o", "s", function()
-        require("flash").remote()
-    end, { silent = true, desc = "flash remote" })
-    vim.keymap.set({ "n", "x" }, "<leader>s", function()
-        require("flash").jump()
-    end, { desc = "flash jump" })
-    vim.keymap.set({ "n", "x" }, "<leader>S", function()
-        require("flash").treesitter()
-    end, { desc = "flash jump" })
-end)
-
-later(function()
-    add "stevearc/overseer.nvim"
-    require("overseer").setup {}
-    vim.keymap.set("n", "<leader>oo", "<cmd>OverseerToggle<CR>")
-    vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<CR>")
-    vim.keymap.set("n", "<leader>os", "<cmd>OverseerShell<CR>")
-end)
-
-later(function()
-    add "stevearc/stickybuf.nvim"
-    require("stickybuf").setup {}
-end)
-
-later(function()
-    add "supermaven-inc/supermaven-nvim"
-    require("supermaven-nvim").setup {
-        keymaps = {
-            accept_suggestion = "<c-;>",
-            clear_suggestion = "<c-.>",
-            accept_word = "<c-j>",
-        },
-    }
-end)
-
-later(function()
-    add "gbprod/yanky.nvim"
-    require("yanky").setup {}
-    vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
-    vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
-    vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
-    vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
-    vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
-    vim.keymap.set("n", "]p", "<Plug>(YankyPutIndentAfterLinewise)")
-    vim.keymap.set("n", "[p", "<Plug>(YankyPutIndentBeforeLinewise)")
-
-    vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
-    vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
-
-    vim.keymap.set({ "n", "x" }, "<leader>p", vim.cmd.YankyRingHistory)
-end)
-
-later(function()
-    add {
-        source = "coder/claudecode.nvim",
-        depends = {
-            "folke/snacks.nvim",
-        },
-    }
-    local toggle_key = "<C-,>"
-    require("claudecode").setup {
-        terminal = {
-            snacks_win_opts = {
-                position = "right",
-                width = 0.4,
-                height = 1.0,
-                border = "rounded",
-                keys = {
-                    claude_hide = {
-                        toggle_key,
-                        function(self)
-                            self:hide()
-                        end,
-                        mode = "t",
-                        desc = "Hide",
+    },
+    {
+        src = "https://github.com/coder/claudecode.nvim",
+        data = {
+            setup = function()
+                local toggle_key = "<C-,>"
+                require("claudecode").setup {
+                    terminal = {
+                        snacks_win_opts = {
+                            position = "right",
+                            width = 0.4,
+                            height = 1.0,
+                            border = "rounded",
+                            keys = {
+                                claude_hide = {
+                                    toggle_key,
+                                    function(self)
+                                        self:hide()
+                                    end,
+                                    mode = "t",
+                                    desc = "Hide",
+                                },
+                            },
+                        },
                     },
-                },
-            },
+                    diff_opts = {
+                        open_in_current_tab = false,
+                    },
+                }
+                vim.keymap.set(
+                    { "n", "x" },
+                    toggle_key,
+                    "<cmd>ClaudeCodeFocus<cr>",
+                    { silent = true, desc = "claudecode toggle" }
+                )
+                vim.keymap.set(
+                    { "n", "x" },
+                    "<leader>da",
+                    "<cmd>ClaudeCodeDiffAccept<cr>",
+                    { silent = true, desc = "claudecode diff accept" }
+                )
+                vim.keymap.set(
+                    { "n", "x" },
+                    "<leader>dd",
+                    "<cmd>ClaudeCodeDiffDeny<cr>",
+                    { silent = true, desc = "claudecode diff deny" }
+                )
+            end,
         },
-        diff_opts = {
-            open_in_current_tab = false,
+    },
+    {
+        src = "https://github.com/stevearc/conform.nvim",
+        data = {
+            setup = function()
+                local conform = require "conform"
+                local util = require "conform.util"
+                local mason_bin = vim.fn.expand "$MASON/bin"
+                conform.setup {
+                    formatters_by_ft = {
+                        astro = { "prettierd" },
+                        css = { "prettierd" },
+                        html = { "prettierd" },
+                        javascript = { "prettierd" },
+                        javascriptreact = { "prettierd" },
+                        lua = { "stylua" },
+                        svelte = { "prettierd" },
+                        typescript = { "prettierd" },
+                        typescriptreact = { "prettierd" },
+                        go = { "gofmt" },
+                        elixir = { "mix", "format" },
+                        heex = { "mix", "format" },
+                    },
+                    format_on_save = {
+                        timeout_ms = 800,
+                        lsp_format = "fallback",
+                    },
+                    formatters = {
+                        prettierd = {
+                            command = util.find_executable({
+                                "node_modules/.bin/prettierd",
+                                mason_bin .. "/prettierd",
+                            }, "prettierd"),
+                        },
+                        stylua = {
+                            command = util.find_executable({
+                                mason_bin .. "/stylua",
+                            }, "stylua"),
+                        },
+                    },
+                }
+
+                vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+            end,
         },
-    }
-    vim.keymap.set(
-        { "n", "x" },
-        toggle_key,
-        "<cmd>ClaudeCodeFocus<cr>",
-        { silent = true, desc = "claudecode toggle" }
-    )
-    vim.keymap.set(
-        { "n", "x" },
-        "<leader>da",
-        "<cmd>ClaudeCodeDiffAccept<cr>",
-        { silent = true, desc = "claudecode diff accept" }
-    )
-    vim.keymap.set(
-        { "n", "x" },
-        "<leader>dd",
-        "<cmd>ClaudeCodeDiffDeny<cr>",
-        { silent = true, desc = "claudecode diff deny" }
-    )
-end)
+    },
+    {
+        src = "https://github.com/folke/flash.nvim",
+        data = {
+            setup = function()
+                require("flash").setup {}
+                vim.keymap.set("o", "s", function()
+                    require("flash").remote()
+                end, { silent = true, desc = "flash remote" })
+                vim.keymap.set({ "n", "x" }, "<leader>s", function()
+                    require("flash").jump()
+                end, { desc = "flash jump" })
+                vim.keymap.set({ "n", "x" }, "<leader>S", function()
+                    require("flash").treesitter()
+                end, { desc = "flash jump" })
+            end,
+        },
+    },
+    {
+        src = "https://github.com/mason-org/mason.nvim",
+        data = {
+            setup = function()
+                require("mason").setup()
+                vim.lsp.enable {
+                    "lua",
+                    "svelte",
+                    "tailwindcss",
+                    "vtsls",
+                }
+
+                vim.api.nvim_create_autocmd("LspAttach", {
+                    desc = "setup lsp actions",
+                    group = vim.api.nvim_create_augroup(
+                        "lsp",
+                        { clear = true }
+                    ),
+                    callback = function(event)
+                        local on_attach = function(client, _)
+                            -- disable lsp formatting in favor of conform
+                            client.server_capabilities.documentFormattingProvider =
+                                false
+                            client.server_capabilities.documentRangeFormattingProvider =
+                                false
+                        end
+                        local client =
+                            vim.lsp.get_client_by_id(event.data.client_id)
+                        on_attach(client, event.buf)
+                    end,
+                })
+
+                -- Add diagnostics to quick-fix list
+                do
+                    local diagnostics = "textDocument/publishDiagnostics"
+                    local default_handler = vim.lsp.handlers[diagnostics]
+                    vim.lsp.handlers[diagnostics] = function(
+                        err,
+                        method,
+                        result,
+                        client_id
+                    )
+                        default_handler(err, method, result, client_id)
+                        vim.diagnostic.setloclist { open = false }
+                    end
+                end
+
+                -- Customize how diagnostics are displayed
+                vim.diagnostic.config {
+                    virtual_text = { current_line = true },
+                    signs = { priority = 0 },
+                    update_in_insert = false,
+                    severity_sort = false,
+                }
+            end,
+        },
+    },
+    {
+        src = "https://github.com/nvim-mini/mini.nvim",
+        data = {
+            setup = function()
+                require("mini.ai").setup {}
+                require("mini.align").setup {}
+                require("mini.bracketed").setup {}
+                require("mini.cmdline").setup {}
+                require("mini.diff").setup {}
+                require("mini.extra").setup {}
+                require("mini.icons").setup {}
+                require("mini.pairs").setup {}
+                require("mini.surround").setup {}
+                require("mini.operators").setup {
+                    replace = { prefix = "rg" }, -- for the sake of lsp gr*
+                }
+                require("mini.icons").tweak_lsp_kind()
+                require("mini.notify").setup {
+                    window = {
+                        config = {
+                            border = "none",
+                        },
+                    },
+                }
+                local notify_opts = { ERROR = { duration = 10000 } }
+                vim.notify = require("mini.notify").make_notify(notify_opts)
+
+                setup_completion()
+                setup_files()
+                setup_picker()
+            end,
+        },
+    },
+    {
+        src = "https://github.com/NeogitOrg/neogit",
+        data = {
+            setup = function()
+                require("neogit").setup {
+                    disable_hint = true,
+                    graph_style = "kitty",
+                    integrations = {
+                        diffview = true,
+                        mini_pick = true,
+                    },
+                    sections = {
+                        recent = { folded = false },
+                    },
+                    signs = {
+                        -- { CLOSED, OPENED }
+                        section = { "▸", "▾" },
+                        item = { "▸", "▾" },
+                    },
+                }
+                vim.keymap.set("n", "<leader>gg", function()
+                    require("neogit").open()
+                end, { silent = true, desc = "git status" })
+                vim.keymap.set("n", "<leader>gc", function()
+                    require("neogit").open { "commit" }
+                end, { silent = true, desc = "git commit" })
+
+                require("diffview").setup {
+                    use_icons = false,
+                }
+                vim.keymap.set("n", "<leader>gh", function()
+                    vim.cmd.DiffviewFileHistory "%"
+                end, { silent = true, desc = "git status" })
+            end,
+        },
+    },
+    {
+        src = "https://github.com/stevearc/overseer.nvim",
+        data = {
+            setup = function()
+                require("overseer").setup {}
+                vim.keymap.set("n", "<leader>oo", "<cmd>OverseerToggle<CR>")
+                vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<CR>")
+                vim.keymap.set("n", "<leader>os", "<cmd>OverseerShell<CR>")
+            end,
+        },
+    },
+    {
+        src = "https://github.com/stevearc/quicker.nvim",
+        data = {
+            setup = function()
+                local quicker = require "quicker"
+                quicker.setup {
+                    highlight = {
+                        lsp = false,
+                        load_buffers = false,
+                    },
+                    keys = {
+                        {
+                            ">",
+                            function()
+                                quicker.expand {
+                                    before = 2,
+                                    after = 2,
+                                    add_to_existing = true,
+                                }
+                            end,
+                            desc = "expand qf context",
+                        },
+                        {
+                            "<",
+                            function()
+                                quicker.collapse()
+                            end,
+                            desc = "collapse qf context",
+                        },
+                    },
+                }
+                vim.keymap.set("n", "<leader>q", function()
+                    quicker.toggle()
+                end, { silent = true, desc = "toggle quickfix" })
+                vim.keymap.set("n", "<leader>l", function()
+                    quicker.toggle { loclist = true }
+                end, { silent = true, desc = "toggle loclist" })
+            end,
+        },
+    },
+    {
+        src = "https://github.com/stevearc/stickybuf.nvim",
+        data = {
+            setup = function()
+                require("stickybuf").setup {}
+            end,
+        },
+    },
+    {
+        src = "https://github.com/supermaven-inc/supermaven-nvim",
+        data = {
+            setup = function()
+                require("supermaven-nvim").setup {
+                    keymaps = {
+                        accept_suggestion = "<c-;>",
+                        clear_suggestion = "<c-.>",
+                        accept_word = "<c-j>",
+                    },
+                }
+            end,
+        },
+    },
+    {
+        src = "https://github.com/nvim-treesitter/nvim-treesitter",
+        data = {
+            setup = function()
+                vim.api.nvim_create_autocmd("FileType", {
+                    pattern = {
+                        "svelte",
+                        "lua",
+                        "javascript",
+                        "typescript",
+                        "html",
+                    },
+                    callback = function()
+                        -- syntax highlighting, provided by Neovim
+                        vim.treesitter.start()
+                        -- folds, provided by Neovim
+                        vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+                        vim.wo.foldmethod = "expr"
+                        vim.wo.foldlevel = 4
+                    end,
+                })
+            end,
+        },
+    },
+    {
+        src = "https://github.com/ten3roberts/window-picker.nvim",
+        data = {
+            setup = function()
+                vim.keymap.set("n", "<leader>ww", function()
+                    vim.cmd [[WindowPick]]
+                end, { silent = true, desc = "pick window" })
+                vim.keymap.set("n", "<leader>wq", function()
+                    vim.cmd [[WindowZap]]
+                end, { silent = true, desc = "close window" })
+                vim.keymap.set("n", "<leader>wo", function()
+                    vim.cmd [[wincmd o]]
+                end, {
+                    silent = true,
+                    desc = "close all other windows",
+                })
+                vim.keymap.set("n", "<leader>wv", function()
+                    vim.cmd [[wincmd v]]
+                end, {
+                    silent = true,
+                    desc = "spit window vertically",
+                })
+                vim.keymap.set("n", "<leader>ws", function()
+                    vim.cmd [[wincmd s]]
+                end, {
+                    silent = true,
+                    desc = "spit window horizontally",
+                })
+            end,
+        },
+    },
+    {
+        src = "https://github.com/gbprod/yanky.nvim",
+        data = {
+            setup = function()
+                require("yanky").setup {}
+                vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
+                vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
+                vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
+                vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
+                vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
+                vim.keymap.set("n", "]p", "<Plug>(YankyPutIndentAfterLinewise)")
+                vim.keymap.set(
+                    "n",
+                    "[p",
+                    "<Plug>(YankyPutIndentBeforeLinewise)"
+                )
+
+                vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
+                vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+
+                vim.keymap.set(
+                    { "n", "x" },
+                    "<leader>p",
+                    vim.cmd.YankyRingHistory
+                )
+            end,
+        },
+    },
+}, {
+    load = function(plug)
+        local data = plug.spec.data or {}
+        local setup = data.setup
+        vim.cmd.packadd(plug.spec.name)
+        if setup ~= nil and type(setup) == "function" then
+            setup()
+        end
+    end,
+})
