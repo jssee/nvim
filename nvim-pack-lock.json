@@ -1,0 +1,80 @@
+{
+  "plugins": {
+    "claudecode.nvim": {
+      "rev": "93f8e48b1f6cbf2469b378c20b3df4115252d379",
+      "src": "https://github.com/coder/claudecode.nvim"
+    },
+    "conform.nvim": {
+      "rev": "8314f4c9e205e7f30b62147069729f9a1227d8bf",
+      "src": "https://github.com/stevearc/conform.nvim"
+    },
+    "diffview.nvim": {
+      "rev": "4516612fe98ff56ae0415a259ff6361a89419b0a",
+      "src": "https://github.com/sindrets/diffview.nvim"
+    },
+    "everybody-wants-that-line.nvim": {
+      "rev": "d48f3e187422a206e0b83b50545fbcaaef307664",
+      "src": "https://github.com/strash/everybody-wants-that-line.nvim"
+    },
+    "flash.nvim": {
+      "rev": "fcea7ff883235d9024dc41e638f164a450c14ca2",
+      "src": "https://github.com/folke/flash.nvim"
+    },
+    "mason.nvim": {
+      "rev": "57e5a8addb8c71fb063ee4acda466c7cf6ad2800",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "mini.nvim": {
+      "rev": "7e55c3d2c04da134085a31156196836f80a89982",
+      "src": "https://github.com/nvim-mini/mini.nvim"
+    },
+    "neogit": {
+      "rev": "d8bf9102692250193b855acd9025a826f1af2729",
+      "src": "https://github.com/NeogitOrg/neogit"
+    },
+    "nvim-treesitter": {
+      "rev": "b033ab331ca0bccbd93c3c2b4f886fdfc09abec0",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "nvim-treesitter-endwise": {
+      "rev": "8fe8a95630f4f2c72a87ba1927af649e0bfaa244",
+      "src": "https://github.com/RRethy/nvim-treesitter-endwise"
+    },
+    "overseer.nvim": {
+      "rev": "3cde0d84bdae56cd119cbf835f764fa30cec384c",
+      "src": "https://github.com/stevearc/overseer.nvim"
+    },
+    "plenary.nvim": {
+      "rev": "b9fd5226c2f76c951fc8ed5923d85e4de065e509",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "quicker.nvim": {
+      "rev": "771437c3e3672dba9233156e1c2e2fc1888a5fff",
+      "src": "https://github.com/stevearc/quicker.nvim"
+    },
+    "snacks.nvim": {
+      "rev": "fe7cfe9800a182274d0f868a74b7263b8c0c020b",
+      "src": "https://github.com/folke/snacks.nvim"
+    },
+    "stickybuf.nvim": {
+      "rev": "0c1e5f1a3eb36eea2cea57083828269cc62c58e4",
+      "src": "https://github.com/stevearc/stickybuf.nvim"
+    },
+    "supermaven-nvim": {
+      "rev": "07d20fce48a5629686aefb0a7cd4b25e33947d50",
+      "src": "https://github.com/supermaven-inc/supermaven-nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "5da1b76e64daf4c5d410f06bcb6b9cb640da7dfd",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "window-picker.nvim": {
+      "rev": "2fe9e4001beeeee9562ddb21b0ad46ab2463bc5b",
+      "src": "https://github.com/ten3roberts/window-picker.nvim"
+    },
+    "yanky.nvim": {
+      "rev": "04fc42b94305d94948c9c197f679336668af3292",
+      "src": "https://github.com/gbprod/yanky.nvim"
+    }
+  }
+}

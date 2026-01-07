@@ -88,7 +88,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end,
 })
 
-
 -- without the `searchCountIndicator`, this `on_key` simply does `auto-nohl`
 -- vim.on_key(function(char)
 --     local key = vim.fn.keytrans(char)
