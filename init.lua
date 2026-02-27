@@ -139,7 +139,6 @@ local setup_picker = function()
         window = {
             config = {
                 height = math.floor(vim.o.lines * 0.2),
-                border = "none",
             },
         },
     }
@@ -223,55 +222,6 @@ vim.pack.add({
                     filename = { enabled = false },
                     separator = " ",
                 }
-            end,
-        },
-    },
-    {
-        src = "https://github.com/coder/claudecode.nvim",
-        data = {
-            setup = function()
-                local toggle_key = "<C-,>"
-                require("claudecode").setup {
-                    terminal = {
-                        snacks_win_opts = {
-                            position = "right",
-                            width = 0.4,
-                            height = 1.0,
-                            border = "rounded",
-                            keys = {
-                                claude_hide = {
-                                    toggle_key,
-                                    function(self)
-                                        self:hide()
-                                    end,
-                                    mode = "t",
-                                    desc = "Hide",
-                                },
-                            },
-                        },
-                    },
-                    diff_opts = {
-                        open_in_current_tab = false,
-                    },
-                }
-                vim.keymap.set(
-                    { "n", "x" },
-                    toggle_key,
-                    "<cmd>ClaudeCodeFocus<cr>",
-                    { silent = true, desc = "claudecode toggle" }
-                )
-                vim.keymap.set(
-                    { "n", "x" },
-                    "<leader>da",
-                    "<cmd>ClaudeCodeDiffAccept<cr>",
-                    { silent = true, desc = "claudecode diff accept" }
-                )
-                vim.keymap.set(
-                    { "n", "x" },
-                    "<leader>dd",
-                    "<cmd>ClaudeCodeDiffDeny<cr>",
-                    { silent = true, desc = "claudecode diff deny" }
-                )
             end,
         },
     },
@@ -411,13 +361,7 @@ vim.pack.add({
                     replace = { prefix = "rg" }, -- for the sake of lsp gr*
                 }
                 require("mini.icons").tweak_lsp_kind()
-                require("mini.notify").setup {
-                    window = {
-                        config = {
-                            border = "none",
-                        },
-                    },
-                }
+                require("mini.notify").setup {}
                 local notify_opts = { ERROR = { duration = 10000 } }
                 vim.notify = require("mini.notify").make_notify(notify_opts)
 
@@ -554,7 +498,7 @@ vim.pack.add({
                         -- folds, provided by Neovim
                         vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
                         vim.wo.foldmethod = "expr"
-                        vim.wo.foldlevel = 4
+                        vim.wo.foldlevel = 99
                     end,
                 })
             end,
