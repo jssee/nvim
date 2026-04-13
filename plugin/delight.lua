@@ -1,20 +1,3 @@
--- local Delight = function(char)
---     local toggle = function(c)
---         local keys = { "<CR>", "n", "N", "*", "#", "?", "/" }
---         local new_hlsearch = vim.tbl_contains(keys, c)
---
---         if vim.opt.hlsearch:get() ~= new_hlsearch then
---             vim.opt.hlsearch = new_hlsearch
---         end
---     end
---
---     local key = vim.fn.keytrans(char)
---     local mode = vim.fn.mode()
---     if mode == "n" then
---         toggle(key)
---     end
--- end
-
 ---@param mode? "clear"
 local function searchCountIndicator(mode)
     local signColumnPlusScrollbarWidth = 2 + 3 -- CONFIG
@@ -87,39 +70,3 @@ vim.api.nvim_create_autocmd("VimEnter", {
         end, vim.api.nvim_create_namespace "autoNohlAndSearchCount")
     end,
 })
-
--- without the `searchCountIndicator`, this `on_key` simply does `auto-nohl`
--- vim.on_key(function(char)
---     local key = vim.fn.keytrans(char)
---     local isCmdlineSearch = vim.fn.getcmdtype():find "[/?]" ~= nil
---     local isNormalMode = vim.api.nvim_get_mode().mode == "n"
---     local searchStarted = (key == "/" or key == "?") and isNormalMode
---     local searchConfirmed = (key == "<CR>" and isCmdlineSearch)
---     local searchCancelled = (key == "<Esc>" and isCmdlineSearch)
---     if
---         not (
---             searchStarted
---             or searchConfirmed
---             or searchCancelled
---             or isNormalMode
---         )
---     then
---         return
---     end
---
---     -- works for RHS, therefore no need to consider remaps
---     local searchMovement = vim.tbl_contains({ "n", "N", "*", "#" }, key)
---     local shortPattern = vim.fn.getreg("/"):gsub([[\V\C]], ""):len() <= 1 -- for `fF`
---
---     if searchCancelled or (not searchMovement and not searchConfirmed) then
---         vim.opt.hlsearch = false
---         searchCountIndicator "clear"
---     elseif
---         (searchMovement and not shortPattern)
---         or searchConfirmed
---         or searchStarted
---     then
---         vim.opt.hlsearch = true
---         vim.defer_fn(searchCountIndicator, 1)
---     end
--- end, vim.api.nvim_create_namespace "autoNohlAndSearchCount")

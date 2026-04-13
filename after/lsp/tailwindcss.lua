@@ -1,3 +1,17 @@
+local root_markers = {
+    {
+        "tailwind.config.js",
+        "tailwind.config.cjs",
+        "tailwind.config.mjs",
+        "tailwind.config.ts",
+        "postcss.config.js",
+        "postcss.config.cjs",
+        "postcss.config.mjs",
+        "postcss.config.ts",
+    },
+    ".git",
+}
+
 ---@type vim.lsp.Config
 return {
     cmd = { "tailwindcss-language-server", "--stdio" },
@@ -95,38 +109,16 @@ return {
         },
     },
     before_init = function(_, config)
-        if not config.settings then
-            config.settings = {}
-        end
-        if not config.settings.editor then
-            config.settings.editor = {}
-        end
-        if not config.settings.editor.tabSize then
-            config.settings.editor.tabSize =
-                vim.lsp.util.get_effective_tabstop()
-        end
+        config.settings = config.settings or {}
+        config.settings.editor = config.settings.editor or {}
+        config.settings.editor.tabSize = config.settings.editor.tabSize
+            or vim.lsp.util.get_effective_tabstop()
     end,
     workspace_required = true,
     root_dir = function(bufnr, on_dir)
-        local root_files = {
-            -- Generic
-            "tailwind.config.js",
-            "tailwind.config.cjs",
-            "tailwind.config.mjs",
-            "tailwind.config.ts",
-            "postcss.config.js",
-            "postcss.config.cjs",
-            "postcss.config.mjs",
-            "postcss.config.ts",
-            -- Fallback for tailwind v4, where tailwind.config.* is not required anymore
-            ".git",
-        }
-        local fname = vim.api.nvim_buf_get_name(bufnr)
-
-        on_dir(
-            vim.fs.dirname(
-                vim.fs.find(root_files, { path = fname, upward = true })[1]
-            )
-        )
+        local root = vim.fs.root(bufnr, root_markers)
+        if root then
+            on_dir(root)
+        end
     end,
 }
