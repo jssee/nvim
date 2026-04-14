@@ -1,3 +1,4 @@
+vim.o.bg = "dark"
 -- Small helpers keep this file cheap to extend without turning it into a framework.
 
 local add = vim.pack.add
@@ -113,6 +114,15 @@ nmap("j", "gj", "move by screen line")
 nmap("k", "gk", "move by screen line")
 nmap("<Backspace>", "^", "first non-blank")
 nmap("q", "<Nop>", "disable Ex mode")
+
+vim.api.nvim_create_user_command("PackUpdate", function(args)
+    local names = #args.fargs > 0 and args.fargs or nil
+    vim.pack.update(names, { force = args.bang })
+end, {
+    bang = true,
+    nargs = "*",
+    desc = "Update vim.pack plugins",
+})
 
 -- Plugins: completion, text objects, picker, and general editing quality of life.
 add { "https://github.com/supermaven-inc/supermaven-nvim" }
