@@ -1,3 +1,5 @@
+
+
 vim.o.bg = "dark"
 -- Small helpers keep this file cheap to extend without turning it into a framework.
 
@@ -282,6 +284,13 @@ on_packchanged("nvim-treesitter", { "update" }, function()
 end, "update treesitter parsers after plugin updates")
 
 add { "https://github.com/stevearc/conform.nvim" }
+local web_formatter = {
+    "biome",
+    "oxfmt",
+    "prettier",
+    "prettierd",
+    stop_after_first = true,
+}
 require("conform").setup {
     format_on_save = {
         timeout_ms = 500,
@@ -289,6 +298,11 @@ require("conform").setup {
     },
     formatters_by_ft = {
         lua = { "stylua" },
+        javascript = web_formatter,
+        typescript = web_formatter,
+        svelte = web_formatter,
+        html = web_formatter,
+        css = web_formatter,
     },
 }
 opt.formatexpr = "v:lua.require'conform'.formatexpr()"
