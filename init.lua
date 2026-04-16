@@ -1,5 +1,3 @@
-
-
 --[[
     .-'"'-.
    / #     \
@@ -144,38 +142,57 @@ require("mini.bracketed").setup {}
 require("mini.cmdline").setup {}
 require("mini.diff").setup {}
 require("mini.extra").setup {}
-require("mini.files").setup {}
 require("mini.icons").setup {}
 require("mini.icons").tweak_lsp_kind()
 require("mini.notify").setup {}
+require("mini.pairs").setup {}
+require("mini.surround").setup {}
 require("mini.operators").setup {
     replace = { prefix = "rg" }, -- keep `gr*` available for LSP
 }
-require("mini.pairs").setup {}
-local pick = require "mini.pick"
-pick.setup {
+
+local MiniPick = require "mini.pick"
+MiniPick.setup {
     window = {
         config = {
             height = math.floor(vim.o.lines * 0.2),
         },
     },
 }
-require("mini.surround").setup {}
 
 vim.notify = require("mini.notify").make_notify {
     ERROR = { duration = 10000 },
 }
-vim.ui.select = pick.ui_select
-
-local minifiles_toggle = function(...)
-    if not MiniFiles.close() then
-        MiniFiles.open(...)
-    end
-end
-map("n", "-", minifiles_toggle, "toggle minifiles")
-nmap("<leader><space>", pick.builtin.files, "pick files")
-nmap("<leader>fg", pick.builtin.grep_live, "live grep")
+vim.ui.select = MiniPick.ui_select
+nmap("<leader><space>", MiniPick.builtin.files, "pick files")
+nmap("<leader>fg", MiniPick.builtin.grep_live, "live grep")
+nmap("<leader>.", ":Pick grep pattern=<cword><cr>", "grep current word")
 nmap("<leader>fp", ":Pick ", "pick builtin")
+
+-- local MiniFiles = require "mini.files"
+-- MiniFiles.setup {}
+-- local minifiles_toggle = function(...)
+--     if not MiniFiles.close() then
+--         MiniFiles.open(vim.api.nvim_buf_get_name(0))
+--         MiniFiles.reveal_cwd()
+--     end
+-- end
+-- map("n", "-", minifiles_toggle, "toggle minifiles")
+
+add { "https://github.com/stevearc/oil.nvim" }
+require("oil").setup {
+    watch_for_changes = true,
+    view_options = {
+        show_hidden = true,
+    },
+    keymaps = {
+        ["l"] = "actions.select",
+        ["q"] = { "actions.close", mode = "n" },
+        ["v"] = { "actions.select", mode = "n", opts = { vertical = true } },
+        ["s"] = { "actions.select", mode = "n", opts = { horizontal = true } },
+    },
+}
+nmap("-", "<cmd>Oil<cr>", "open parent directory")
 
 add { "https://github.com/supermaven-inc/supermaven-nvim" }
 require("supermaven-nvim").setup {}

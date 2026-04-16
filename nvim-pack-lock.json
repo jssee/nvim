@@ -17,7 +17,7 @@
       "src": "https://github.com/mason-org/mason.nvim"
     },
     "mini.nvim": {
-      "rev": "27a3e747a4e603b4121f5759e74020430ec7b7d5",
+      "rev": "29447d7b0e1fc9bc9d0384953e63be3fae816736",
       "src": "https://github.com/nvim-mini/mini.nvim"
     },
     "neogit": {
@@ -43,6 +43,10 @@
     "nvim-vtsls": {
       "rev": "0b5f73c9e50ce95842ea07bb3f05c7d66d87d14a",
       "src": "https://github.com/yioneko/nvim-vtsls"
+    },
+    "oil.nvim": {
+      "rev": "0fcc83805ad11cf714a949c98c605ed717e0b83e",
+      "src": "https://github.com/stevearc/oil.nvim"
     },
     "overseer.nvim": {
       "rev": "f818eefff81f4b12fb7cf236f1b6c16768a2fcbc",

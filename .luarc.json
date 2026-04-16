@@ -6,8 +6,6 @@
   ],
   "diagnostics.globals": [
     "vim",
-    "MiniFiles",
-    "MiniDeps"
   ],
   "workspace.checkThirdParty": false,
   "workspace.library": [
