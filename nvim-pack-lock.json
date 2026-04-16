@@ -17,7 +17,7 @@
       "src": "https://github.com/mason-org/mason.nvim"
     },
     "mini.nvim": {
-      "rev": "69b7433355664cf76898eb86a12a019f39bd86d1",
+      "rev": "27a3e747a4e603b4121f5759e74020430ec7b7d5",
       "src": "https://github.com/nvim-mini/mini.nvim"
     },
     "neogit": {
@@ -25,11 +25,11 @@
       "src": "https://github.com/neogitorg/neogit"
     },
     "nvim": {
-      "rev": "58b8b2c4dc8a1be1da22ff7ca41d1a9ca8d8a6b6",
+      "rev": "4736d0362cdb621bed4189d789b5ba00a66d33c7",
       "src": "https://github.com/ember-theme/nvim"
     },
     "nvim-jump": {
-      "rev": "79c91e5860b856c66187107d8d3c8d0950261f2c",
+      "rev": "672204397c51507d7a821bc61ba9fad7dbed4303",
       "src": "https://github.com/yorickpeterse/nvim-jump"
     },
     "nvim-treesitter": {

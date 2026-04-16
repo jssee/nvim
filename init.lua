@@ -1,8 +1,19 @@
 
 
-vim.o.bg = "dark"
--- Small helpers keep this file cheap to extend without turning it into a framework.
-
+--[[
+    .-'"'-.
+   / #     \
+  : #       :  .-'"'-.
+   \       /  / #     \
+    \     /  : #       :
+     `'q'`    \       /
+       (       \     /
+        )       `'p'`
+       (          )
+        )        (
+                  ) @jssee
+--]]
+-- Helpers {{{1
 local add = vim.pack.add
 
 local gr = vim.api.nvim_create_augroup("user-config", { clear = true })
@@ -36,9 +47,10 @@ local nmap = function(lhs, rhs, desc, opts)
     map("n", lhs, rhs, desc, opts)
 end
 
--- Core editor defaults. Keep these boring and global.
+-- Options {{{1
 vim.g.mapleader = " "
 
+vim.o.bg = "dark"
 local opt = vim.opt
 opt.autocomplete = true
 opt.breakindent = true
@@ -85,7 +97,16 @@ opt.tabstop = 4
 opt.textwidth = 200
 opt.undofile = true
 
--- Conservative diagnostics: underline everything, speak up only for real errors.
+-- Keymaps {{{1
+map({ "n", "x" }, ";", ":", "command mode")
+map({ "n", "x" }, ":", ";")
+map({ "i", "c" }, "kj", "<Esc>", "escape")
+nmap("j", "gj", "move by screen line")
+nmap("k", "gk", "move by screen line")
+nmap("<Backspace>", "^", "first non-blank")
+nmap("q", "<Nop>", "disable Ex mode")
+
+-- Diagnostics {{{1
 local HINT = vim.diagnostic.severity.HINT
 local WARN = vim.diagnostic.severity.WARN
 local ERROR = vim.diagnostic.severity.ERROR
@@ -100,23 +121,12 @@ vim.diagnostic.config {
     update_in_insert = false,
 }
 
+-- Autocommands {{{1
 autocmd("TextYankPost", nil, function()
     vim.highlight.on_yank { higroup = "Visual", timeout = 300 }
 end, "highlight yanked text")
 
-autocmd("WinResized", nil, function()
-    vim.cmd.wincmd [[=]]
-end, "rebalance window sizes")
-
--- Global keymaps.
-map({ "n", "x" }, ";", ":", "command mode")
-map({ "n", "x" }, ":", ";")
-map({ "i", "c" }, "kj", "<Esc>", "escape")
-nmap("j", "gj", "move by screen line")
-nmap("k", "gk", "move by screen line")
-nmap("<Backspace>", "^", "first non-blank")
-nmap("q", "<Nop>", "disable Ex mode")
-
+-- Commands {{{1
 vim.api.nvim_create_user_command("PackUpdate", function(args)
     local names = #args.fargs > 0 and args.fargs or nil
     vim.pack.update(names, { force = args.bang })
@@ -126,10 +136,7 @@ end, {
     desc = "Update vim.pack plugins",
 })
 
--- Plugins: completion, text objects, picker, and general editing quality of life.
-add { "https://github.com/supermaven-inc/supermaven-nvim" }
-require("supermaven-nvim").setup {}
-
+-- Packages {{{1
 add { "https://github.com/nvim-mini/mini.nvim" }
 require("mini.ai").setup {}
 require("mini.align").setup {}
@@ -137,6 +144,7 @@ require("mini.bracketed").setup {}
 require("mini.cmdline").setup {}
 require("mini.diff").setup {}
 require("mini.extra").setup {}
+require("mini.files").setup {}
 require("mini.icons").setup {}
 require("mini.icons").tweak_lsp_kind()
 require("mini.notify").setup {}
@@ -144,12 +152,6 @@ require("mini.operators").setup {
     replace = { prefix = "rg" }, -- keep `gr*` available for LSP
 }
 require("mini.pairs").setup {}
-require("mini.surround").setup {}
-
-vim.notify = require("mini.notify").make_notify {
-    ERROR = { duration = 10000 },
-}
-
 local pick = require "mini.pick"
 pick.setup {
     window = {
@@ -158,24 +160,65 @@ pick.setup {
         },
     },
 }
-vim.ui.select = pick.ui_select
-nmap("<leader><space>", pick.builtin.files, "pick files")
-nmap("<leader>fg", pick.builtin.grep_live, "live grep")
-nmap("<leader>fp", ":Pick ", "pick builtin")
+require("mini.surround").setup {}
 
-require("mini.files").setup {}
+vim.notify = require("mini.notify").make_notify {
+    ERROR = { duration = 10000 },
+}
+vim.ui.select = pick.ui_select
+
 local minifiles_toggle = function(...)
     if not MiniFiles.close() then
         MiniFiles.open(...)
     end
 end
 map("n", "-", minifiles_toggle, "toggle minifiles")
+nmap("<leader><space>", pick.builtin.files, "pick files")
+nmap("<leader>fg", pick.builtin.grep_live, "live grep")
+nmap("<leader>fp", ":Pick ", "pick builtin")
 
-add { "https://github.com/yorickpeterse/nvim-jump" }
-require("jump").setup {
-    label = "OkMsg",
+add { "https://github.com/supermaven-inc/supermaven-nvim" }
+require("supermaven-nvim").setup {}
+
+add {
+    "https://github.com/mason-org/mason.nvim",
+    "https://github.com/yioneko/nvim-vtsls",
 }
-map({ "n", "x", "o" }, "<leader>s", require("jump").start, "jump")
+require("mason").setup()
+vim.lsp.enable {
+    "lua",
+    "svelte",
+    "tailwindcss",
+    "vtsls",
+}
+autocmd("LspAttach", nil, function(ev)
+    local toggle_codelens = function()
+        vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled())
+    end
+    vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, {
+        autotrigger = true,
+        convert = function(item)
+            return { abbr = item.label:gsub("%b()", "") }
+        end,
+    })
+    nmap("grc", toggle_codelens, "toggle codelens", { buffer = ev.buf })
+end, "setup lsp actions")
+
+add {
+    "https://github.com/nvim-treesitter/nvim-treesitter",
+    "https://github.com/rrethy/nvim-treesitter-endwise",
+}
+autocmd(
+    "FileType",
+    { "svelte", "lua", "javascript", "typescript", "html" },
+    function(ev)
+        vim.treesitter.start(ev.buf)
+    end,
+    "start treesitter"
+)
+on_packchanged("nvim-treesitter", { "update" }, function()
+    vim.cmd.TSUpdate()
+end, "update treesitter parsers after plugin updates")
 
 add { "https://github.com/gbprod/yanky.nvim" }
 require("yanky").setup {}
@@ -188,7 +231,55 @@ nmap("<C-p>", "<Plug>(YankyPreviousEntry)")
 nmap("<C-n>", "<Plug>(YankyNextEntry)")
 map({ "n", "x" }, "<leader>p", vim.cmd.YankyRingHistory, "open yank history")
 
--- Plugins: lists, windows, and task running.
+add { "https://github.com/stevearc/conform.nvim" }
+local web_formatter = {
+    "biome",
+    "oxfmt",
+    "prettier",
+    "prettierd",
+    stop_after_first = true,
+}
+require("conform").setup {
+    format_on_save = {
+        timeout_ms = 500,
+        lsp_format = "fallback",
+    },
+    formatters_by_ft = {
+        lua = { "stylua" },
+        javascript = web_formatter,
+        typescript = web_formatter,
+        svelte = web_formatter,
+        html = web_formatter,
+        css = web_formatter,
+    },
+}
+opt.formatexpr = "v:lua.require'conform'.formatexpr()"
+
+add { "https://github.com/yorickpeterse/nvim-jump" }
+require("jump").setup {
+    label = "OkMsg",
+}
+map({ "n", "x", "o" }, "<leader>s", require("jump").start, "jump")
+
+add { "https://github.com/nvim-lua/plenary.nvim" }
+add { "https://github.com/esmuellert/codediff.nvim" }
+require("codediff").setup {
+    explorer = {
+        view_mode = "tree",
+    },
+}
+add { "https://github.com/neogitorg/neogit" }
+require("neogit").setup {
+    graph_style = "kitty",
+    integrations = {
+        mini_pick = true,
+        codediff = true,
+    },
+}
+nmap("<leader>gg", "<cmd>Neogit<cr>", "git status")
+nmap("<leader>gc", "<cmd>Neogit commit<cr>", "git commit")
+nmap("<leader>gp", "<cmd>Neogit push<cr>", "git push")
+
 add { "https://github.com/stevearc/overseer.nvim" }
 require("overseer").setup {}
 nmap("<leader>oo", "<cmd>OverseerToggle<CR>", "toggle overseer")
@@ -242,84 +333,7 @@ require("everybody-wants-that-line").setup {
     separator = " ",
 }
 
--- Plugins: language tooling.
-add {
-    "https://github.com/mason-org/mason.nvim",
-    "https://github.com/yioneko/nvim-vtsls",
-}
-require("mason").setup()
-vim.lsp.enable {
-    "lua",
-    "svelte",
-    "tailwindcss",
-    "vtsls",
-}
-autocmd("LspAttach", nil, function(ev)
-    local toggle_codelens = function()
-        vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled())
-    end
-    vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, {
-        autotrigger = true,
-        convert = function(item)
-            return { abbr = item.label:gsub("%b()", "") }
-        end,
-    })
-    nmap("grc", toggle_codelens, "toggle codelens", { buffer = ev.buf })
-end, "setup lsp actions")
-
-add {
-    "https://github.com/nvim-treesitter/nvim-treesitter",
-    "https://github.com/rrethy/nvim-treesitter-endwise",
-}
-autocmd(
-    "FileType",
-    { "svelte", "lua", "javascript", "typescript", "html" },
-    function(ev)
-        vim.treesitter.start(ev.buf)
-    end,
-    "start treesitter"
-)
-on_packchanged("nvim-treesitter", { "update" }, function()
-    vim.cmd.TSUpdate()
-end, "update treesitter parsers after plugin updates")
-
-add { "https://github.com/stevearc/conform.nvim" }
-local web_formatter = {
-    "biome",
-    "oxfmt",
-    "prettier",
-    "prettierd",
-    stop_after_first = true,
-}
-require("conform").setup {
-    format_on_save = {
-        timeout_ms = 500,
-        lsp_format = "fallback",
-    },
-    formatters_by_ft = {
-        lua = { "stylua" },
-        javascript = web_formatter,
-        typescript = web_formatter,
-        svelte = web_formatter,
-        html = web_formatter,
-        css = web_formatter,
-    },
-}
-opt.formatexpr = "v:lua.require'conform'.formatexpr()"
-
-add { "https://github.com/esmuellert/codediff.nvim" }
-add { "https://github.com/nvim-lua/plenary.nvim" }
-add { "https://github.com/neogitorg/neogit" }
-require("neogit").setup {
-    graph_style = "kitty",
-    integrations = {
-        mini_pick = true,
-        codediff = true,
-    },
-}
-nmap("<leader>gg", "<cmd>Neogit<cr>", "git status")
-nmap("<leader>gc", "<cmd>Neogit commit<cr>", "git commit")
-nmap("<leader>gp", "<cmd>Neogit push<cr>", "git push")
-
 add { "https://github.com/ember-theme/nvim" }
 vim.cmd.colo "ember"
+
+-- vim: fdm=marker fdl=0
