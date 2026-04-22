@@ -165,7 +165,7 @@ vim.notify = require("mini.notify").make_notify {
 }
 vim.ui.select = MiniPick.ui_select
 nmap("<leader><space>", MiniPick.builtin.files, "pick files")
-nmap("<leader>fg", MiniPick.builtin.grep_live, "live grep")
+nmap("<leader>/", MiniPick.builtin.grep_live, "live grep")
 nmap("<leader>.", ":Pick grep pattern=<cword><cr>", "grep current word")
 nmap("<leader>fp", ":Pick ", "pick builtin")
 
