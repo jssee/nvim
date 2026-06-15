@@ -48,7 +48,6 @@ end
 -- Options {{{1
 vim.g.mapleader = " "
 
-vim.o.bg = "dark"
 local opt = vim.opt
 opt.autocomplete = true
 opt.breakindent = true
@@ -351,6 +350,6 @@ require("everybody-wants-that-line").setup {
 }
 
 add { "https://github.com/ember-theme/nvim" }
-vim.cmd.colo "ember"
+vim.cmd.colo "ember-auto"
 
 -- vim: fdm=marker fdl=0
