@@ -143,6 +143,7 @@ require("mini.diff").setup {}
 require("mini.extra").setup {}
 require("mini.icons").setup {}
 require("mini.icons").tweak_lsp_kind()
+require("mini.input").setup {}
 require("mini.notify").setup {}
 require("mini.pairs").setup {}
 require("mini.surround").setup {}
@@ -165,7 +166,7 @@ vim.notify = require("mini.notify").make_notify {
 vim.ui.select = MiniPick.ui_select
 nmap("<leader><space>", MiniPick.builtin.files, "pick files")
 nmap("<leader>/", MiniPick.builtin.grep_live, "live grep")
-nmap("<leader>.", ":Pick grep pattern=<cword><cr>", "grep current word")
+nmap("<leader>.", ":Pick grep pattern='<cword>'<cr>", "grep current word")
 nmap("<leader>fp", ":Pick ", "pick builtin")
 
 -- local MiniFiles = require "mini.files"
