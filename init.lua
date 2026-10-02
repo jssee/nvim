@@ -133,6 +133,8 @@ end, {
 })
 
 -- Packages {{{1
+vim.cmd.packadd "nvim.undotree"
+
 add { "https://github.com/nvim-mini/mini.nvim" }
 require("mini.ai").setup {}
 require("mini.align").setup {}
