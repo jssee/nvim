@@ -148,6 +148,7 @@ require("mini.notify").setup {}
 require("mini.pairs").setup {}
 require("mini.surround").setup {}
 require("mini.operators").setup {
+    exchange = { prefix = "cx" }, -- keep `gx` for opening URLs
     replace = { prefix = "rg" }, -- keep `gr*` available for LSP
 }
 
