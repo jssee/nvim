@@ -143,6 +143,7 @@ require("mini.bracketed").setup {}
 require("mini.cmdline").setup {}
 require("mini.diff").setup {}
 require("mini.extra").setup {}
+require("mini.git").setup {}
 require("mini.icons").setup {}
 require("mini.icons").tweak_lsp_kind()
 require("mini.input").setup {}
@@ -340,12 +341,6 @@ nmap("<leader>wq", "<cmd>WindowZap<CR>", "close window")
 nmap("<leader>wo", "<cmd>wincmd o<CR>", "close other windows")
 nmap("<leader>wv", "<cmd>wincmd v<CR>", "split window vertically")
 nmap("<leader>ws", "<cmd>wincmd s<CR>", "split window horizontally")
-
-add { "https://github.com/strash/everybody-wants-that-line.nvim" }
-require("everybody-wants-that-line").setup {
-    filename = { enabled = false },
-    separator = " ",
-}
 
 add { "https://github.com/ember-theme/nvim" }
 vim.cmd.colo "ember-auto"
