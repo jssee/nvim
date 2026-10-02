@@ -225,14 +225,22 @@ add {
     "https://github.com/nvim-treesitter/nvim-treesitter",
     "https://github.com/rrethy/nvim-treesitter-endwise",
 }
-autocmd(
-    "FileType",
-    { "svelte", "lua", "javascript", "typescript", "html" },
-    function(ev)
-        vim.treesitter.start(ev.buf)
-    end,
-    "start treesitter"
-)
+-- Lua, markdown, vimdoc and a few others ship with Neovim.
+require("nvim-treesitter").install {
+    "astro",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "ruby",
+    "scss",
+    "svelte",
+    "tsx",
+    "typescript",
+}
+autocmd("FileType", "*", function(ev)
+    pcall(vim.treesitter.start, ev.buf)
+end, "start treesitter when a parser exists")
 on_packchanged("nvim-treesitter", { "update" }, function()
     vim.cmd.TSUpdate()
 end, "update treesitter parsers after plugin updates")
