@@ -101,7 +101,6 @@ map({ "i", "c" }, "kj", "<Esc>", "escape")
 nmap("j", "gj", "move by screen line")
 nmap("k", "gk", "move by screen line")
 nmap("<Backspace>", "^", "first non-blank")
-nmap("q", "<Nop>", "disable Ex mode")
 
 -- Diagnostics {{{1
 local HINT = vim.diagnostic.severity.HINT
