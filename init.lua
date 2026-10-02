@@ -52,7 +52,7 @@ local opt = vim.opt
 opt.autocomplete = true
 opt.breakindent = true
 opt.clipboard:append "unnamedplus"
-opt.complete = ".^5,w^5,b^5"
+opt.complete = "o^10,.^5,w^5,b^5" -- `o` brings LSP into 'autocomplete'
 opt.completeopt = {
     "menuone", -- only show the popup when there is more than one match
     "popup", -- show extra info in a side popup
@@ -214,7 +214,6 @@ autocmd("LspAttach", nil, function(ev)
         vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled())
     end
     vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, {
-        autotrigger = true,
         convert = function(item)
             return { abbr = item.label:gsub("%b()", "") }
         end,
