@@ -76,6 +76,7 @@ opt.nrformats = "unsigned"
 opt.number = true
 opt.ruler = false
 opt.scrolloff = 10
+opt.scrolloffpad = 1 -- keep the cursor centered at the end of the file
 opt.shada = "'100,<50,s10,:1000,/100,@100,h"
 opt.shiftround = true
 opt.shortmess = "CFOSWaco"
