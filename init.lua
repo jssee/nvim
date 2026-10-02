@@ -195,9 +195,6 @@ require("oil").setup {
 }
 nmap("-", "<cmd>Oil<cr>", "open parent directory")
 
-add { "https://github.com/supermaven-inc/supermaven-nvim" }
-require("supermaven-nvim").setup {}
-
 add {
     "https://github.com/mason-org/mason.nvim",
     "https://github.com/yioneko/nvim-vtsls",

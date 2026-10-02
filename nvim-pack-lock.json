@@ -64,10 +64,6 @@
       "rev": "9e00edfd94baef4a78b4248ae8309a2d4943f118",
       "src": "https://github.com/stevearc/stickybuf.nvim"
     },
-    "supermaven-nvim": {
-      "rev": "07d20fce48a5629686aefb0a7cd4b25e33947d50",
-      "src": "https://github.com/supermaven-inc/supermaven-nvim"
-    },
     "window-picker.nvim": {
       "rev": "2fe9e4001beeeee9562ddb21b0ad46ab2463bc5b",
       "src": "https://github.com/ten3roberts/window-picker.nvim"
