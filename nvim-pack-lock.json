@@ -67,10 +67,6 @@
     "window-picker.nvim": {
       "rev": "2fe9e4001beeeee9562ddb21b0ad46ab2463bc5b",
       "src": "https://github.com/ten3roberts/window-picker.nvim"
-    },
-    "yanky.nvim": {
-      "rev": "b13d318dc7c816e2eee626dde61fa0a7237bc77e",
-      "src": "https://github.com/gbprod/yanky.nvim"
     }
   }
 }

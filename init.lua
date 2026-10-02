@@ -168,6 +168,7 @@ nmap("<leader><space>", MiniPick.builtin.files, "pick files")
 nmap("<leader>/", MiniPick.builtin.grep_live, "live grep")
 nmap("<leader>.", ":Pick grep pattern='<cword>'<cr>", "grep current word")
 nmap("<leader>fp", ":Pick ", "pick builtin")
+nmap("<leader>p", "<cmd>Pick registers<cr>", "pick register to put")
 
 -- local MiniFiles = require "mini.files"
 -- MiniFiles.setup {}
@@ -240,17 +241,6 @@ end, "start treesitter when a parser exists")
 on_packchanged("nvim-treesitter", { "update" }, function()
     vim.cmd.TSUpdate()
 end, "update treesitter parsers after plugin updates")
-
-add { "https://github.com/gbprod/yanky.nvim" }
-require("yanky").setup {}
-map({ "n", "x" }, "y", "<Plug>(YankyYank)")
-map({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
-map({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
-nmap("]p", "<Plug>(YankyPutIndentAfterLinewise)")
-nmap("[p", "<Plug>(YankyPutIndentBeforeLinewise)")
-nmap("<C-p>", "<Plug>(YankyPreviousEntry)")
-nmap("<C-n>", "<Plug>(YankyNextEntry)")
-map({ "n", "x" }, "<leader>p", vim.cmd.YankyRingHistory, "open yank history")
 
 add { "https://github.com/stevearc/conform.nvim" }
 local web_formatter = {
