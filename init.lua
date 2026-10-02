@@ -118,9 +118,9 @@ vim.diagnostic.config {
 }
 
 -- Autocommands {{{1
-autocmd("TextYankPost", nil, function()
-    vim.highlight.on_yank { higroup = "Visual", timeout = 300 }
-end, "highlight yanked text")
+autocmd({ "TextYankPost", "TextPutPost" }, nil, function()
+    vim.hl.hl_op { higroup = "Visual", timeout = 300 }
+end, "highlight yanked and put text")
 
 -- Commands {{{1
 vim.api.nvim_create_user_command("PackUpdate", function(args)
