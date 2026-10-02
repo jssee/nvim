@@ -75,7 +75,7 @@ opt.listchars =
 opt.nrformats = "unsigned"
 opt.number = true
 opt.ruler = false
-opt.scrolloff = 10
+opt.scrolloff = 999
 opt.scrolloffpad = 1 -- keep the cursor centered at the end of the file
 opt.shada = "'100,<50,s10,:1000,/100,@100,h"
 opt.shiftround = true
@@ -123,16 +123,6 @@ autocmd({ "TextYankPost", "TextPutPost" }, nil, function()
     vim.hl.hl_op { higroup = "Visual", timeout = 300 }
 end, "highlight yanked and put text")
 
--- Commands {{{1
-vim.api.nvim_create_user_command("PackUpdate", function(args)
-    local names = #args.fargs > 0 and args.fargs or nil
-    vim.pack.update(names, { force = args.bang })
-end, {
-    bang = true,
-    nargs = "*",
-    desc = "Update vim.pack plugins",
-})
-
 -- Packages {{{1
 vim.cmd.packadd "nvim.undotree"
 
@@ -154,6 +144,16 @@ require("mini.operators").setup {
     exchange = { prefix = "cx" }, -- keep `gx` for opening URLs
     replace = { prefix = "rg" }, -- keep `gr*` available for LSP
 }
+
+local map_multistep = require("mini.keymap").map_multistep
+map_multistep(
+    "i",
+    "<Tab>",
+    { "pmenu_next", "jump_after_tsnode", "jump_after_close" }
+)
+map_multistep("i", "<S-Tab>", { "pmenu_prev", "jump_before_tsnode" })
+map_multistep("i", "<CR>", { "pmenu_accept", "minipairs_cr" })
+map_multistep("i", "<BS>", { "minipairs_bs" })
 
 local MiniPick = require "mini.pick"
 MiniPick.setup {
@@ -186,6 +186,7 @@ nmap("<leader>p", "<cmd>Pick registers<cr>", "pick register to put")
 
 add { "https://github.com/stevearc/oil.nvim" }
 require("oil").setup {
+    skip_confirm_for_simple_edits = true,
     watch_for_changes = true,
     view_options = {
         show_hidden = true,
@@ -248,10 +249,7 @@ end, "update treesitter parsers after plugin updates")
 
 add { "https://github.com/stevearc/conform.nvim" }
 local web_formatter = {
-    "biome",
-    "oxfmt",
     "prettier",
-    "prettierd",
     stop_after_first = true,
 }
 require("conform").setup {
@@ -262,19 +260,22 @@ require("conform").setup {
     formatters_by_ft = {
         lua = { "stylua" },
         javascript = web_formatter,
+        javascriptreact = web_formatter,
         typescript = web_formatter,
+        typescriptreact = web_formatter,
         svelte = web_formatter,
         html = web_formatter,
         css = web_formatter,
+        eruby = { "htmlbeautifier" },
+        astro = { "prettier" },
+        markdown = { "prettier" },
     },
 }
 opt.formatexpr = "v:lua.require'conform'.formatexpr()"
 
 add { "https://github.com/yorickpeterse/nvim-jump" }
-require("jump").setup {
-    label = "OkMsg",
-}
-map({ "n", "x", "o" }, "<leader>s", require("jump").start, "jump")
+require("jump").setup {}
+map("n", "<leader>s", require("jump").start, "jump")
 
 add { "https://github.com/nvim-lua/plenary.nvim" }
 add { "https://github.com/esmuellert/codediff.nvim" }
