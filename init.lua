@@ -206,6 +206,7 @@ add {
 }
 require("mason").setup()
 vim.lsp.enable {
+    "expert",
     "lua",
     "svelte",
     "tailwindcss",
@@ -231,6 +232,9 @@ add {
 require("nvim-treesitter").install {
     "astro",
     "css",
+    "eex",
+    "elixir",
+    "heex",
     "html",
     "javascript",
     "json",
