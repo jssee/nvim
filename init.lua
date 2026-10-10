@@ -48,11 +48,14 @@ end
 -- Options {{{1
 vim.g.mapleader = " "
 
-local opt = vim.opt
-opt.autocomplete = true
-opt.breakindent = true
-opt.clipboard:append "unnamedplus"
-opt.complete = "o^10,.^5,w^5,b^5" -- `o` brings LSP into 'autocomplete'
+local o = vim.o
+-- `vim.opt` accepts tables, but nightly annotates its fields as `vim.Option`,
+-- which rejects every assignment. Drop the cast once upstream types it properly.
+local opt = vim.opt --[[@as table<string, any>]]
+o.autocomplete = true
+o.breakindent = true
+o.clipboard = "unnamedplus"
+o.complete = "o^10,.^5,w^5,b^5" -- `o` brings LSP into 'autocomplete'
 opt.completeopt = {
     "menuone", -- only show the popup when there is more than one match
     "popup", -- show extra info in a side popup
@@ -60,40 +63,40 @@ opt.completeopt = {
     "fuzzy", -- use fuzzy matching
     "nosort",
 }
-opt.copyindent = true
-opt.cursorline = true
-opt.cursorlineopt = { "number" }
-opt.expandtab = true
+o.copyindent = true
+o.cursorline = true
+o.cursorlineopt = "number"
+o.expandtab = true
 opt.fillchars = { diff = "╱" }
-opt.grepprg = [[rg --vimgrep]]
-opt.ignorecase = true
-opt.infercase = true
-opt.laststatus = 3
-opt.list = true
+o.grepprg = [[rg --vimgrep]]
+o.ignorecase = true
+o.infercase = true
+o.laststatus = 3
+o.list = true
 opt.listchars =
     { tab = "⁚⁚", trail = "·", extends = "→", precedes = "←" }
-opt.nrformats = "unsigned"
-opt.number = true
-opt.ruler = false
-opt.scrolloff = 999
-opt.scrolloffpad = 1 -- keep the cursor centered at the end of the file
-opt.shada = "'100,<50,s10,:1000,/100,@100,h"
-opt.shiftround = true
-opt.shortmess = "CFOSWaco"
-opt.showbreak = "↪  "
-opt.showcmd = false
-opt.showmode = false
-opt.signcolumn = "yes:1"
-opt.smartcase = true
-opt.smartindent = true
-opt.shiftwidth = 2
-opt.softtabstop = 2
-opt.splitbelow = true
-opt.splitright = true
-opt.swapfile = false
-opt.tabstop = 4
-opt.textwidth = 200
-opt.undofile = true
+o.nrformats = "unsigned"
+o.number = true
+o.ruler = false
+o.scrolloff = 999
+o.scrolloffpad = 1 -- keep the cursor centered at the end of the file
+o.shada = "'100,<50,s10,:1000,/100,@100,h"
+o.shiftround = true
+o.shortmess = "CFOSWaco"
+o.showbreak = "↪  "
+o.showcmd = false
+o.showmode = false
+o.signcolumn = "yes:1"
+o.smartcase = true
+o.smartindent = true
+o.shiftwidth = 2
+o.softtabstop = 2
+o.splitbelow = true
+o.splitright = true
+o.swapfile = false
+o.tabstop = 4
+o.textwidth = 200
+o.undofile = true
 
 -- Keymaps {{{1
 map({ "n", "x" }, ";", ":", "command mode")
@@ -275,7 +278,7 @@ require("conform").setup {
         markdown = { "prettier" },
     },
 }
-opt.formatexpr = "v:lua.require'conform'.formatexpr()"
+o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
 add { "https://github.com/yorickpeterse/nvim-jump" }
 require("jump").setup {}
