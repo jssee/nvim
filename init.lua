@@ -126,6 +126,18 @@ autocmd({ "TextYankPost", "TextPutPost" }, nil, function()
     vim.hl.hl_op { higroup = "Visual", timeout = 300 }
 end, "highlight yanked and put text")
 
+-- Rex blends a program's default background into its theme, so drop the
+-- colorscheme's background wherever it paints it and let the terminal's show.
+autocmd("ColorScheme", "*", function()
+    local bg = vim.api.nvim_get_hl(0, { name = "Normal" }).bg
+    for name, hl in pairs(vim.api.nvim_get_hl(0, {})) do
+        if bg and hl.bg == bg then
+            hl.bg = nil
+            vim.api.nvim_set_hl(0, name, hl)
+        end
+    end
+end, "let the terminal background show through")
+
 -- Packages {{{1
 vim.cmd.packadd "nvim.undotree"
 
